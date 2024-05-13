@@ -43,4 +43,8 @@ public class Task extends Base {
         }
         this.changeUpdatedAt(LocalDateTime.now());
     }
+
+    public void delete() {
+        super.delete();
+    }
 }

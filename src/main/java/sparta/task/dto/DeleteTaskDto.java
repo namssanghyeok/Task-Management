@@ -7,14 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class UpdateTaskDto {
-    @Size(min = 4, max = 50)
-    private String title;
-
-    private String content;
-
-    private String assignee;
-
+public class DeleteTaskDto {
     @NotBlank
     @Size(min = 4, max = 30)
     private String password;

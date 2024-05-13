@@ -19,4 +19,8 @@ public class Base {
     protected void changeUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
+
+    protected void delete() {
+        this.deletedAt = LocalDateTime.now();
+    }
 }

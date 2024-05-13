@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sparta.task.dto.CreateTaskDto;
+import sparta.task.dto.DeleteTaskDto;
 import sparta.task.dto.UpdateTaskDto;
 import sparta.task.service.TaskService;
 
@@ -35,5 +36,13 @@ public class TaskController {
             @PathVariable Long id,
             @Valid @RequestBody UpdateTaskDto updateTaskDto) {
         return ResponseEntity.ok(this.taskService.updateTaskBy(id, updateTaskDto));
+    }
+
+    @DeleteMapping("/{id}")
+    ResponseEntity<?> deleteTask(@PathVariable Long id,
+                                 @Valid @RequestBody DeleteTaskDto deleteTaskDto
+    ) {
+        this.taskService.deleteBy(id, deleteTaskDto);
+        return ResponseEntity.noContent().build();
     }
 }

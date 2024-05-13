@@ -4,8 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import sparta.task.dto.CreateTaskDto;
+import sparta.task.dto.DeleteTaskDto;
 import sparta.task.dto.TaskDto;
 import sparta.task.dto.UpdateTaskDto;
+import sparta.task.exception.BadRequest.BadRequestException;
 import sparta.task.exception.Forbidden.ForbiddenException;
 import sparta.task.exception.NotFound.NotFoundException;
 import sparta.task.mapper.TaskMapper;
@@ -51,5 +53,17 @@ public class TaskService {
         // 3. update & save
         task.updateBy(updateTaskDto);
         return this.taskMapper.toTaskDto(this.taskRepository.save(task));
+    }
+
+    public void deleteBy(Long id, DeleteTaskDto deleteTaskDto) {
+        Task task = this.taskRepository.findById(id).orElseThrow(NotFoundException::new);
+        if (!task.getPassword().equals(deleteTaskDto.getPassword())) {
+            throw new ForbiddenException("PASSWORD INCORRECT");
+        }
+        if (task.getDeletedAt() != null) {
+            throw new BadRequestException("ALREADY DELETED");
+        }
+        task.delete();
+        this.taskRepository.save(task);
     }
 }
