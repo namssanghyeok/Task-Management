@@ -1,7 +1,7 @@
 create table task
 (
     task_id   bigint primary key auto_increment,
-    title     VARCHAR(50) not null,
+    title     VARCHAR(200) not null,
     content   text,
     assignee  VARCHAR(30),
     password  VARCHAR(30) not null,

@@ -1,5 +1,6 @@
 package sparta.task.dto;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -9,11 +10,12 @@ import lombok.Setter;
 @Setter
 public class CreateTaskDto {
     @NotBlank
-    @Size(min = 4, max = 50)
+    @Size(max = 200)
     private String title;
 
     private String content;
 
+    @Email
     private String assignee;
 
     @NotBlank
