@@ -1,0 +1,63 @@
+### FAILED CREATE TASK WITHOUT TITLE
+POST http://localhost:8080/api/task
+Content-Type: application/json
+
+{
+  "content": "hahahoho",
+  "assignee": "foo",
+  "password": "1234"
+}
+
+### FAILED CREATE TASK WITHOUT PASSWORD
+POST http://localhost:8080/api/task
+Content-Type: application/json
+
+{
+  "title": "title",
+  "content": "hahahoho",
+  "assignee": "foo"
+}
+
+### FAILED CREATE TASK TITLE VALIDATION (title too short)
+POST http://localhost:8080/api/task
+Content-Type: application/json
+
+{
+  "title": "tit",
+  "content": "hahahoho",
+  "assignee": "foo",
+  "password": "1234"
+}
+
+### FAILED CREATE TASK TITLE VALIDATION (title too long)
+POST http://localhost:8080/api/task
+Content-Type: application/json
+
+{
+  "title": "titletitletitletitletitletitletitletitletitletitletitletitle",
+  "content": "hahahoho",
+  "assignee": "foo",
+  "password": "1234"
+}
+
+### FAILED CREATE TASK PASSWORD VALIDATION (password too long)
+POST http://localhost:8080/api/task
+Content-Type: application/json
+
+{
+  "title": "title",
+  "content": "hahahoho",
+  "assignee": "foo",
+  "password": "123"
+}
+
+### FAILED CREATE TASK PASSWORD VALIDATION (password too short)
+POST http://localhost:8080/api/task
+Content-Type: application/json
+
+{
+  "title": "title",
+  "content": "hahahoho",
+  "assignee": "foo",
+  "password": "1123412341234123412341234123412341234123412341234234"
+}

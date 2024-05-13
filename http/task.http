@@ -1,0 +1,30 @@
+### SUC CREATE TASK
+POST http://localhost:8080/api/task
+Content-Type: application/json
+
+{
+  "title": "hello world",
+  "content": "hahahoho",
+  "assignee": "foo",
+  "password": "1234"
+}
+
+### SUC CREATE TASK WITHOUT ASSIGNEE
+POST http://localhost:8080/api/task
+Content-Type: application/json
+
+{
+  "title": "hello world",
+  "content": "hahahoho",
+  "password": "1234"
+}
+
+### SUC CREATE TASK WITHOUT CONTENT
+POST http://localhost:8080/api/task
+Content-Type: application/json
+
+{
+  "title": "hello world",
+  "assignee": "hello",
+  "password": "1234"
+}
