@@ -46,7 +46,7 @@ Content-Type: application/json
 }
 
 ### DELETE
-DELETE localhost:8080/api/task/12
+DELETE localhost:8080/api/task/11
 Content-Type: application/json
 
 {

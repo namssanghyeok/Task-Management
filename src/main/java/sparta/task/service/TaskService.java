@@ -7,9 +7,8 @@ import sparta.task.dto.CreateTaskDto;
 import sparta.task.dto.DeleteTaskDto;
 import sparta.task.dto.TaskDto;
 import sparta.task.dto.UpdateTaskDto;
-import sparta.task.exception.BadRequest.BadRequestException;
-import sparta.task.exception.Forbidden.ForbiddenException;
-import sparta.task.exception.NotFound.NotFoundException;
+import sparta.task.exception.ErrorCode;
+import sparta.task.exception.exceptions.HttpStatusException;
 import sparta.task.mapper.TaskMapper;
 import sparta.task.model.Task;
 import sparta.task.repository.TaskRepository;
@@ -32,7 +31,7 @@ public class TaskService {
     public TaskDto getById(long taskId) {
         return this.taskMapper.toTaskDto(
                 this.taskRepository.findById(taskId)
-                        .orElseThrow(NotFoundException::new)
+                        .orElseThrow(() -> new HttpStatusException(ErrorCode.NOT_FOUND))
         );
     }
 
@@ -45,10 +44,10 @@ public class TaskService {
 
     public TaskDto updateTaskBy(Long id, UpdateTaskDto updateTaskDto) {
         // 1. find
-        Task task = this.taskRepository.findById(id).orElseThrow(NotFoundException::new);
+        Task task = this.taskRepository.findById(id).orElseThrow(() -> new HttpStatusException(ErrorCode.NOT_FOUND));
         // 2. check password. if not, throw 401
         if (!task.getPassword().equals(updateTaskDto.getPassword())) {
-            throw new ForbiddenException("PASSWORD INCORRECT");
+            throw new HttpStatusException(ErrorCode.INVALID_PASSWORD);
         }
         // 3. update & save
         task.updateBy(updateTaskDto);
@@ -56,12 +55,12 @@ public class TaskService {
     }
 
     public void deleteBy(Long id, DeleteTaskDto deleteTaskDto) {
-        Task task = this.taskRepository.findById(id).orElseThrow(NotFoundException::new);
+        Task task = this.taskRepository.findById(id).orElseThrow(() -> new HttpStatusException(ErrorCode.NOT_FOUND));
         if (!task.getPassword().equals(deleteTaskDto.getPassword())) {
-            throw new ForbiddenException("PASSWORD INCORRECT");
+            throw new HttpStatusException(ErrorCode.INVALID_PASSWORD);
         }
         if (task.getDeletedAt() != null) {
-            throw new BadRequestException("ALREADY DELETED");
+            throw new HttpStatusException(ErrorCode.ALREADY_DELETED);
         }
         task.delete();
         this.taskRepository.save(task);
