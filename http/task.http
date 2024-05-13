@@ -34,3 +34,13 @@ GET localhost:8080/api/task/10
 
 ### SHOW ALL
 GET localhost:8080/api/task
+
+### UPDATE
+PUT localhost:8080/api/task/10
+Content-Type: application/json
+
+{
+  "title": "title is updated",
+  "content": "content is updated",
+  "password": "1234"
+}

@@ -1,6 +1,5 @@
 package sparta.task.repository;
 
-import jakarta.persistence.OrderBy;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import sparta.task.model.Task;

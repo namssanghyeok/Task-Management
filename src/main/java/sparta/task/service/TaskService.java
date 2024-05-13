@@ -1,13 +1,15 @@
 package sparta.task.service;
 
-import jakarta.persistence.OrderBy;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import sparta.task.dto.CreateTaskDto;
 import sparta.task.dto.TaskDto;
+import sparta.task.dto.UpdateTaskDto;
+import sparta.task.exception.Forbidden.ForbiddenException;
 import sparta.task.exception.NotFound.NotFoundException;
 import sparta.task.mapper.TaskMapper;
+import sparta.task.model.Task;
 import sparta.task.repository.TaskRepository;
 
 import java.util.List;
@@ -37,5 +39,17 @@ public class TaskService {
                 .stream()
                 .map(this.taskMapper::toTaskDto)
                 .toList();
+    }
+
+    public TaskDto updateTaskBy(Long id, UpdateTaskDto updateTaskDto) {
+        // 1. find
+        Task task = this.taskRepository.findById(id).orElseThrow(NotFoundException::new);
+        // 2. check password. if not, throw 401
+        if (!task.getPassword().equals(updateTaskDto.getPassword())) {
+            throw new ForbiddenException("PASSWORD INCORRECT");
+        }
+        // 3. update & save
+        task.updateBy(updateTaskDto);
+        return this.taskMapper.toTaskDto(this.taskRepository.save(task));
     }
 }

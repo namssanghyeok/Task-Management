@@ -13,4 +13,5 @@ public class TaskDto {
     private String content;
     private String assignee;
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

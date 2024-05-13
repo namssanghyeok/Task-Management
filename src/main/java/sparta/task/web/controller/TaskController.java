@@ -2,9 +2,11 @@ package sparta.task.web.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sparta.task.dto.CreateTaskDto;
+import sparta.task.dto.UpdateTaskDto;
 import sparta.task.service.TaskService;
 
 @RestController
@@ -15,7 +17,7 @@ public class TaskController {
 
     @PostMapping
     ResponseEntity<?> createTask(@Valid @RequestBody CreateTaskDto createTaskDto) {
-        return ResponseEntity.ok(this.taskService.createTask(createTaskDto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(taskService.createTask(createTaskDto));
     }
 
     @GetMapping("/{id}")
@@ -26,5 +28,12 @@ public class TaskController {
     @GetMapping
     ResponseEntity<?> showAllTasks() {
         return ResponseEntity.ok(this.taskService.showAll());
+    }
+
+    @PutMapping("/{id}")
+    ResponseEntity<?> updateTask(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateTaskDto updateTaskDto) {
+        return ResponseEntity.ok(this.taskService.updateTaskBy(id, updateTaskDto));
     }
 }

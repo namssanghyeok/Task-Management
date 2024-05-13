@@ -26,6 +26,7 @@ public class TaskMapper {
                 .content(task.getContent())
                 .assignee(task.getAssignee())
                 .createdAt(task.getCreatedAt())
+                .updatedAt(task.getUpdatedAt())
                 .build();
     }
 }
