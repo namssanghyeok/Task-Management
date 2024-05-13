@@ -31,3 +31,6 @@ Content-Type: application/json
 
 ### FIND BY ID
 GET localhost:8080/api/task/10
+
+### SHOW ALL
+GET localhost:8080/api/task

@@ -22,4 +22,9 @@ public class TaskController {
     ResponseEntity<?> showTaskById(@PathVariable Long id) {
         return ResponseEntity.ok(this.taskService.getById(id));
     }
+
+    @GetMapping
+    ResponseEntity<?> showAllTasks() {
+        return ResponseEntity.ok(this.taskService.showAll());
+    }
 }
