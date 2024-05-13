@@ -29,14 +29,15 @@ public class TaskService {
     }
 
     public TaskDto getById(long taskId) {
-        return this.taskMapper.toTaskDto(
-                this.taskRepository.findById(taskId)
-                        .orElseThrow(() -> new HttpStatusException(ErrorCode.NOT_FOUND))
-        );
+        Task task = this.findByIdOrThrow(taskId);
+        if (task.isDeleted()) {
+            throw new HttpStatusException(ErrorCode.ALREADY_DELETED);
+        }
+        return this.taskMapper.toTaskDto(task);
     }
 
     public List<TaskDto> showAll() {
-        return this.taskRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"))
+        return this.taskRepository.findAllByDeletedAtIsNull(Sort.by(Sort.Direction.DESC, "createdAt"))
                 .stream()
                 .map(this.taskMapper::toTaskDto)
                 .toList();
@@ -44,9 +45,10 @@ public class TaskService {
 
     public TaskDto updateTaskBy(Long id, UpdateTaskDto updateTaskDto) {
         // 1. find
-        Task task = this.taskRepository.findById(id).orElseThrow(() -> new HttpStatusException(ErrorCode.NOT_FOUND));
+        Task task = this.taskRepository.findById(id)
+                .orElseThrow(() -> new HttpStatusException(ErrorCode.NOT_FOUND));
         // 2. check password. if not, throw 401
-        if (!task.getPassword().equals(updateTaskDto.getPassword())) {
+        if (task.checkPassword(updateTaskDto.getPassword())) {
             throw new HttpStatusException(ErrorCode.INVALID_PASSWORD);
         }
         // 3. update & save
@@ -55,14 +57,19 @@ public class TaskService {
     }
 
     public void deleteBy(Long id, DeleteTaskDto deleteTaskDto) {
-        Task task = this.taskRepository.findById(id).orElseThrow(() -> new HttpStatusException(ErrorCode.NOT_FOUND));
-        if (!task.getPassword().equals(deleteTaskDto.getPassword())) {
+        Task task = this.findByIdOrThrow(id);
+        if (task.checkPassword(deleteTaskDto.getPassword())) {
             throw new HttpStatusException(ErrorCode.INVALID_PASSWORD);
         }
-        if (task.getDeletedAt() != null) {
+        if (task.isDeleted()) {
             throw new HttpStatusException(ErrorCode.ALREADY_DELETED);
         }
+
         task.delete();
         this.taskRepository.save(task);
+    }
+
+    private Task findByIdOrThrow(Long id) {
+        return this.taskRepository.findById(id).orElseThrow(() -> new HttpStatusException(ErrorCode.NOT_FOUND));
     }
 }

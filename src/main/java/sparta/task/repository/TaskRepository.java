@@ -7,5 +7,5 @@ import sparta.task.model.Task;
 import java.util.List;
 
 public interface TaskRepository extends JpaRepository<Task, Long> {
-    List<Task> findAll(Sort sort);
+    List<Task> findAllByDeletedAtIsNull(Sort sort);
 }

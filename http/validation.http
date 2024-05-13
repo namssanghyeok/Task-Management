@@ -8,6 +8,15 @@ Content-Type: application/json
   "password": "1234"
 }
 
+### FAILED CREATE TASK WITHOUT TITLE, PASSWORD
+POST http://localhost:8080/api/task
+Content-Type: application/json
+
+{
+  "content": "hahahoho",
+  "assignee": "foo"
+}
+
 ### FAILED CREATE TASK WITHOUT PASSWORD
 POST http://localhost:8080/api/task
 Content-Type: application/json

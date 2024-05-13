@@ -30,13 +30,13 @@ Content-Type: application/json
 }
 
 ### FIND BY ID
-GET localhost:8080/api/task/10
+GET localhost:8080/api/task/33
 
 ### SHOW ALL
 GET localhost:8080/api/task
 
 ### UPDATE
-PUT localhost:8080/api/task/10
+PUT localhost:8080/api/task/33
 Content-Type: application/json
 
 {
@@ -46,7 +46,7 @@ Content-Type: application/json
 }
 
 ### DELETE
-DELETE localhost:8080/api/task/11
+DELETE localhost:8080/api/task/32
 Content-Type: application/json
 
 {

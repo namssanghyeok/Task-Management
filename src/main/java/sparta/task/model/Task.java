@@ -47,4 +47,14 @@ public class Task extends Base {
     public void delete() {
         super.delete();
     }
+
+    @Transient
+    public boolean checkPassword(String password) {
+        return !this.password.equals(password);
+    }
+
+    @Transient
+    public boolean isDeleted() {
+        return this.getDeletedAt() != null;
+    }
 }
