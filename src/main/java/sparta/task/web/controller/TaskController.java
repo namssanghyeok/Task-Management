@@ -3,10 +3,7 @@ package sparta.task.web.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import sparta.task.dto.CreateTaskDto;
 import sparta.task.service.TaskService;
 
@@ -19,5 +16,10 @@ public class TaskController {
     @PostMapping
     ResponseEntity<?> createTask(@Valid @RequestBody CreateTaskDto createTaskDto) {
         return ResponseEntity.ok(this.taskService.createTask(createTaskDto));
+    }
+
+    @GetMapping("/{id}")
+    ResponseEntity<?> showTaskById(@PathVariable Long id) {
+        return ResponseEntity.ok(this.taskService.getById(id));
     }
 }

@@ -28,3 +28,6 @@ Content-Type: application/json
   "assignee": "hello",
   "password": "1234"
 }
+
+### FIND BY ID
+GET localhost:8080/api/task/10
