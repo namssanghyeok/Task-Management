@@ -1,26 +1,26 @@
 package sparta.task.mapper;
 
 import org.springframework.stereotype.Component;
-import sparta.task.dto.CreateTaskDto;
-import sparta.task.dto.TaskDto;
+import sparta.task.dto.request.CreateTaskRequestDto;
+import sparta.task.dto.response.TaskResponseDto;
 import sparta.task.model.Task;
 
 import java.time.LocalDateTime;
 
 @Component
 public class TaskMapper {
-    public Task CreateTaskDtoToEntity(CreateTaskDto createTaskDto) {
+    public Task CreateTaskDtoToEntity(CreateTaskRequestDto createTaskRequestDto) {
         return Task.builder()
-                .title(createTaskDto.getTitle())
-                .content(createTaskDto.getContent())
-                .assignee(createTaskDto.getAssignee())
-                .password(createTaskDto.getPassword())
+                .title(createTaskRequestDto.getTitle())
+                .content(createTaskRequestDto.getContent())
+                .assignee(createTaskRequestDto.getAssignee())
+                .password(createTaskRequestDto.getPassword())
                 .createdAt(LocalDateTime.now())
                 .build();
     }
 
-    public TaskDto toTaskDto(Task task) {
-        return TaskDto.builder()
+    public TaskResponseDto toTaskDto(Task task) {
+        return TaskResponseDto.builder()
                 .id(task.getId())
                 .title(task.getTitle())
                 .content(task.getContent())

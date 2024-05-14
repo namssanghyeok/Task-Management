@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import sparta.task.dto.UpdateTaskDto;
+import sparta.task.dto.request.UpdateTaskRequestDto;
 import sparta.task.model.common.Base;
 
 import java.time.LocalDateTime;
@@ -36,15 +36,15 @@ public class Task extends Base {
     private List<UploadFile> attachments = new ArrayList<>();
 
     // domain logic
-    public void updateBy(UpdateTaskDto updateTaskDto) {
-        if (updateTaskDto.getTitle() != null && !updateTaskDto.getTitle().isEmpty()) {
-            this.title = updateTaskDto.getTitle();
+    public void updateBy(UpdateTaskRequestDto updateTaskRequestDto) {
+        if (updateTaskRequestDto.getTitle() != null && !updateTaskRequestDto.getTitle().isEmpty()) {
+            this.title = updateTaskRequestDto.getTitle();
         }
-        if (updateTaskDto.getContent() != null && !updateTaskDto.getContent().isEmpty()) {
-            this.content = updateTaskDto.getContent();
+        if (updateTaskRequestDto.getContent() != null && !updateTaskRequestDto.getContent().isEmpty()) {
+            this.content = updateTaskRequestDto.getContent();
         }
-        if (updateTaskDto.getAssignee() != null && !updateTaskDto.getAssignee().isEmpty()) {
-            this.assignee = updateTaskDto.getAssignee();
+        if (updateTaskRequestDto.getAssignee() != null && !updateTaskRequestDto.getAssignee().isEmpty()) {
+            this.assignee = updateTaskRequestDto.getAssignee();
         }
         this.changeUpdatedAt(LocalDateTime.now());
     }

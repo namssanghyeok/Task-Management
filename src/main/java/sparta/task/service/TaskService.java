@@ -3,10 +3,10 @@ package sparta.task.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import sparta.task.dto.CreateTaskDto;
-import sparta.task.dto.DeleteTaskDto;
-import sparta.task.dto.TaskDto;
-import sparta.task.dto.UpdateTaskDto;
+import sparta.task.dto.request.CreateTaskRequestDto;
+import sparta.task.dto.request.DeleteTaskRequestDto;
+import sparta.task.dto.response.TaskResponseDto;
+import sparta.task.dto.request.UpdateTaskRequestDto;
 import sparta.task.exception.ErrorCode;
 import sparta.task.exception.exceptions.HttpStatusException;
 import sparta.task.mapper.TaskMapper;
@@ -22,13 +22,13 @@ public class TaskService {
 
     private final TaskMapper taskMapper;
 
-    public TaskDto createTask(CreateTaskDto createTaskDto) {
+    public TaskResponseDto createTask(CreateTaskRequestDto createTaskRequestDto) {
         return this.taskMapper.toTaskDto(this.taskRepository.save(
-                this.taskMapper.CreateTaskDtoToEntity(createTaskDto)
+                this.taskMapper.CreateTaskDtoToEntity(createTaskRequestDto)
         ));
     }
 
-    public TaskDto getById(long taskId) {
+    public TaskResponseDto getById(long taskId) {
         Task task = this.findByIdOrThrow(taskId);
         if (task.isDeleted()) {
             throw new HttpStatusException(ErrorCode.ALREADY_DELETED);
@@ -36,29 +36,29 @@ public class TaskService {
         return this.taskMapper.toTaskDto(task);
     }
 
-    public List<TaskDto> showAll() {
+    public List<TaskResponseDto> showAll() {
         return this.taskRepository.findAllByDeletedAtIsNull(Sort.by(Sort.Direction.DESC, "createdAt"))
                 .stream()
                 .map(this.taskMapper::toTaskDto)
                 .toList();
     }
 
-    public TaskDto updateTaskBy(Long id, UpdateTaskDto updateTaskDto) {
+    public TaskResponseDto updateTaskBy(Long id, UpdateTaskRequestDto updateTaskRequestDto) {
         // 1. find
         Task task = this.taskRepository.findById(id)
                 .orElseThrow(() -> new HttpStatusException(ErrorCode.NOT_FOUND));
         // 2. check password. if not, throw 401
-        if (task.checkPassword(updateTaskDto.getPassword())) {
+        if (task.checkPassword(updateTaskRequestDto.getPassword())) {
             throw new HttpStatusException(ErrorCode.INVALID_PASSWORD);
         }
         // 3. update & save
-        task.updateBy(updateTaskDto);
+        task.updateBy(updateTaskRequestDto);
         return this.taskMapper.toTaskDto(this.taskRepository.save(task));
     }
 
-    public void deleteBy(Long id, DeleteTaskDto deleteTaskDto) {
+    public void deleteBy(Long id, DeleteTaskRequestDto deleteTaskRequestDto) {
         Task task = this.findByIdOrThrow(id);
-        if (task.checkPassword(deleteTaskDto.getPassword())) {
+        if (task.checkPassword(deleteTaskRequestDto.getPassword())) {
             throw new HttpStatusException(ErrorCode.INVALID_PASSWORD);
         }
         if (task.isDeleted()) {

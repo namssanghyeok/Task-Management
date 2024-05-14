@@ -16,10 +16,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import sparta.task.dto.CreateTaskDto;
-import sparta.task.dto.DeleteTaskDto;
-import sparta.task.dto.TaskDto;
-import sparta.task.dto.UpdateTaskDto;
+import sparta.task.dto.request.CreateTaskRequestDto;
+import sparta.task.dto.request.DeleteTaskRequestDto;
+import sparta.task.dto.response.TaskResponseDto;
+import sparta.task.dto.request.UpdateTaskRequestDto;
 import sparta.task.exception.CustomErrorResponse;
 import sparta.task.service.TaskService;
 import sparta.task.service.UploadFileService;
@@ -38,17 +38,17 @@ public class TaskController {
 
     @Operation(summary = "task를 생성합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "201", content = @Content(schema = @Schema(implementation = TaskDto.class))),
+            @ApiResponse(responseCode = "201", content = @Content(schema = @Schema(implementation = TaskResponseDto.class))),
             @ApiResponse(responseCode = "400", description = "validation 오류"),
     })
     @PostMapping
-    ResponseEntity<?> createTask(@Valid @RequestBody CreateTaskDto createTaskDto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(taskService.createTask(createTaskDto));
+    ResponseEntity<?> createTask(@Valid @RequestBody CreateTaskRequestDto createTaskRequestDto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(taskService.createTask(createTaskRequestDto));
     }
 
     @Operation(summary = "task를 조회합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = TaskDto.class))),
+            @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = TaskResponseDto.class))),
             @ApiResponse(responseCode = "400", description = "삭제된 task"),
             @ApiResponse(responseCode = "404", description = "존재하지 않는 task"),
     })
@@ -58,7 +58,7 @@ public class TaskController {
     }
 
     @Operation(summary = "모든 task를 조회합니다.")
-    @ApiResponse(responseCode = "200", content = @Content(array = @ArraySchema(schema = @Schema(implementation = TaskDto.class))), description = "삭제되지 않은 모든 task를 시간순(desc)으로 정렬합니다.")
+    @ApiResponse(responseCode = "200", content = @Content(array = @ArraySchema(schema = @Schema(implementation = TaskResponseDto.class))), description = "삭제되지 않은 모든 task를 시간순(desc)으로 정렬합니다.")
     @GetMapping
     ResponseEntity<?> showAllTasks() {
         return ResponseEntity.ok(this.taskService.showAll());
@@ -66,7 +66,7 @@ public class TaskController {
 
     @Operation(summary = "task를 수정합니다.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = TaskDto.class), mediaType = "application/json")),
+            @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = TaskResponseDto.class), mediaType = "application/json")),
             @ApiResponse(responseCode = "400", description = "validation error", content = @Content(schema = @Schema(implementation = CustomErrorResponse.class), mediaType = "application/json")),
             @ApiResponse(responseCode = "403", description = "password error", content = @Content(schema = @Schema(implementation = CustomErrorResponse.class), mediaType = "application/json")),
             @ApiResponse(responseCode = "404", description = "not found", content = @Content(schema = @Schema(implementation = CustomErrorResponse.class), mediaType = "application/json"))
@@ -74,8 +74,8 @@ public class TaskController {
     @PutMapping("/{id}")
     ResponseEntity<?> updateTask(
             @PathVariable Long id,
-            @Valid @RequestBody UpdateTaskDto updateTaskDto) {
-        return ResponseEntity.ok(this.taskService.updateTaskBy(id, updateTaskDto));
+            @Valid @RequestBody UpdateTaskRequestDto updateTaskRequestDto) {
+        return ResponseEntity.ok(this.taskService.updateTaskBy(id, updateTaskRequestDto));
     }
 
     @Operation(summary = "task를 삭제합니다.")
@@ -88,9 +88,9 @@ public class TaskController {
 
     @DeleteMapping("/{id}")
     ResponseEntity<?> deleteTask(@PathVariable Long id,
-                                 @Valid @RequestBody DeleteTaskDto deleteTaskDto
+                                 @Valid @RequestBody DeleteTaskRequestDto deleteTaskRequestDto
     ) {
-        this.taskService.deleteBy(id, deleteTaskDto);
+        this.taskService.deleteBy(id, deleteTaskRequestDto);
         return ResponseEntity.noContent().build();
     }
 
@@ -104,7 +104,7 @@ public class TaskController {
                                         HttpServletRequest request
     ) {
         // TODO: password 처리도 해야함
-        TaskDto task = this.taskService.getById(id);
+        TaskResponseDto task = this.taskService.getById(id);
         return ResponseEntity.ok(this.uploadFileService.fileUploadTo(task.getId(), file));
     }
 
