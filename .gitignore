@@ -37,4 +37,7 @@ out/
 .vscode/
 
 ### h2
-task_db.mv.db
+task_db.*
+
+### files
+files/

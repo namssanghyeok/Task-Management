@@ -1,0 +1,48 @@
+### SHOW FILES
+GET http://localhost:8080/api/task/1/attachment
+
+### ALL FILES DOWNLOAD
+GET http://localhost:8080/api/task/1/attachment/download
+
+### FILE DOWNLOAD
+GET http://localhost:8080/api/file/4bc2cbf0-2367-4da0-bbba-27313cffa49e
+
+### FILE DELETE
+DELETE http://localhost:8080/api/file/4bc2cbf0-2367-4da0-bbba-27313cffa49e
+Content-Type: application/json
+
+{
+  "password": "1234"
+}
+
+### FILE UPLOAD
+POST http://localhost:8080/api/task/1/attachment/upload
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="password"
+Content-Type: text/plain
+
+1234
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename="request-form-data.txt"
+Content-Type: text/plain
+
+< ./request-form-data.txt
+--WebAppBoundary--
+
+### PNG upload
+POST http://localhost:8080/api/task/1/attachment/upload
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="password"
+Content-Type: text/plain
+
+1234
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename="dummy.png"
+Content-Type: image/png
+
+< ./dummy.png
+--WebAppBoundary--
