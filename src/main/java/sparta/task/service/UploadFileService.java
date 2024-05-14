@@ -2,6 +2,7 @@ package sparta.task.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import sparta.task.dto.response.UploadFileResponseDto;
@@ -52,6 +53,7 @@ public class UploadFileService {
                         .size(file.getSize())
                         .filename(filename)
                         .taskId(taskId)
+                        .path("file:" + this.getFullPath(filename))
                         .createdAt(LocalDateTime.now())
                         .build()
         );
@@ -61,4 +63,8 @@ public class UploadFileService {
         return fileDir + filename;
     }
 
+    public UploadFile getByFilename(String filename) {
+        return this.uploadFileRepository.findByFilename(filename)
+                .orElseThrow(() -> new HttpStatusException(ErrorCode.FILE_NOT_FOUND));
+    }
 }

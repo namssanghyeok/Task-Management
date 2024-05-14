@@ -1,11 +1,9 @@
 package sparta.task.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.springframework.context.annotation.Lazy;
 import sparta.task.model.common.Base;
 
 @Getter
@@ -22,6 +20,8 @@ public class UploadFile extends Base {
     private String filename;
 
     private String originalFilename;
+
+    private String path;
 
     private Long taskId;
 

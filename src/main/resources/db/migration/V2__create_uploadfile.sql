@@ -2,10 +2,11 @@ create table upload_file
 (
     file_id BIGINT PRIMARY KEY AUTO_INCREMENT,
     filename VARCHAR(36) NOT NULL, // UUID
-    original_filename varchar(100) NOT NULL,
+    original_filename VARCHAR(100) NOT NULL,
     task_id BIGINT,
     size BIGINT,
     type VARCHAR(40),
+    path VARCHAR(100),
     CONSTRAINT fk_file_task_id FOREIGN KEY (task_id) REFERENCES task (task_id),
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
