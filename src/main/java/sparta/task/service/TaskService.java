@@ -39,12 +39,12 @@ public class TaskService {
         return this.taskMapper.toTaskDto(task);
     }
 
-    public Task findById(long taskId) {
+    public Task findByIdAndCheckPassword(long taskId) {
         return this.findByIdOrThrow(taskId);
     }
 
 
-    public Task findById(long taskId, String password) {
+    public Task findByIdAndCheckPassword(long taskId, String password) {
         Task task = this.findByIdOrThrow(taskId);
         if (task.checkPassword(password)) {
             throw new HttpStatusException(ErrorCode.INVALID_PASSWORD);

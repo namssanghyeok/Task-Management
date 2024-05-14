@@ -61,7 +61,8 @@ public class UploadFileService {
                 .orElseThrow(() -> new HttpStatusException(ErrorCode.FILE_NOT_FOUND));
     }
 
-    public void deleteFileByName(String filename) {
+    public void deleteById(Long id) {
+        this.uploadFileRepository.deleteById(id);
     }
 
     private String getFullPath(String filename) {

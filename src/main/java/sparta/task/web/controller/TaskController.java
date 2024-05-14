@@ -117,7 +117,7 @@ public class TaskController {
     public ResponseEntity<?> uploadFile(@PathVariable Long id,
                                         @Valid @ModelAttribute UploadFileRequestDto uploadFileRequestDto
     ) {
-        Task task = this.taskService.findById(id, uploadFileRequestDto.getPassword());
+        Task task = this.taskService.findByIdAndCheckPassword(id, uploadFileRequestDto.getPassword());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(this.uploadFileService.fileUploadTo(task.getId(), uploadFileRequestDto.getFile()));
     }
@@ -140,7 +140,7 @@ public class TaskController {
     })
     @GetMapping("/{id}/attachment/download")
     public ResponseEntity<?> downloadAllAttachments(@PathVariable Long id) {
-        Task task = this.taskService.findById(id);
+        Task task = this.taskService.findByIdAndCheckPassword(id);
         List<UploadFile> attachments = task.getAttachments();
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         // TODO: 비동기로 for문 돌게 수정해야함
