@@ -39,6 +39,11 @@ public class TaskService {
         return this.taskMapper.toTaskDto(task);
     }
 
+    public Task findById(long taskId) {
+        return this.findByIdOrThrow(taskId);
+    }
+
+
     public Task findById(long taskId, String password) {
         Task task = this.findByIdOrThrow(taskId);
         if (task.checkPassword(password)) {

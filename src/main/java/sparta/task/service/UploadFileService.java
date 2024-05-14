@@ -2,7 +2,6 @@ package sparta.task.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import sparta.task.dto.response.UploadFileResponseDto;
@@ -22,6 +21,7 @@ import java.util.UUID;
 public class UploadFileService {
     private final UploadFileRepository uploadFileRepository;
     private final UploadFileMapper uploadFileMapper;
+
     @Value("${file.dir}")
     private String fileDir;
 
@@ -30,15 +30,12 @@ public class UploadFileService {
     }
 
     private UploadFile storeFile(Long taskId, MultipartFile file) {
-        if (file == null) {
-            return null;
-        }
-        if (file.isEmpty()) {
+        if (file == null || file.isEmpty()) {
             return null;
         }
         String originalFilename = file.getOriginalFilename();
         if (originalFilename == null) {
-            throw new HttpStatusException(ErrorCode.BAD_REQUEST);
+            throw new HttpStatusException(ErrorCode.INVALID_FILENAME);
         }
         String filename = UUID.randomUUID().toString();
         try {
@@ -59,12 +56,16 @@ public class UploadFileService {
         );
     }
 
-    private String getFullPath(String filename) {
-        return fileDir + filename;
-    }
-
     public UploadFile getByFilename(String filename) {
         return this.uploadFileRepository.findByFilename(filename)
                 .orElseThrow(() -> new HttpStatusException(ErrorCode.FILE_NOT_FOUND));
     }
+
+    public void deleteFileByName(String filename) {
+    }
+
+    private String getFullPath(String filename) {
+        return fileDir + filename;
+    }
+
 }
