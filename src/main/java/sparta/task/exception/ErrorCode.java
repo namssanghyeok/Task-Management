@@ -1,11 +1,8 @@
 package sparta.task.exception;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.repository.support.JpaRepositoryImplementation;
 import org.springframework.http.HttpStatus;
-import sparta.task.exception.exceptions.HttpStatusException;
 
 @Getter
 @RequiredArgsConstructor
@@ -14,6 +11,7 @@ public enum ErrorCode {
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "BAD REQUEST"),
     ALREADY_DELETED(HttpStatus.BAD_REQUEST, "ALREADY DELETED"),
     INVALID_FILENAME(HttpStatus.BAD_REQUEST, "INVALID fILENAME"),
+    EMPTY_FILES(HttpStatus.BAD_REQUEST, "EMPTY FILES"),
 
     /*  403 FORBIDDEN: 접근허용안됨*/
     FORBIDDEN(HttpStatus.FORBIDDEN, "FORBIDDEN"),

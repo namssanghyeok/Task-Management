@@ -11,12 +11,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 import sparta.task.dto.request.CreateTaskRequestDto;
 import sparta.task.dto.request.DeleteTaskRequestDto;
@@ -28,14 +25,10 @@ import sparta.task.exception.ErrorCode;
 import sparta.task.exception.exceptions.HttpStatusException;
 import sparta.task.model.Task;
 import sparta.task.model.UploadFile;
+import sparta.task.service.FileService;
 import sparta.task.service.TaskService;
-import sparta.task.service.UploadFileService;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 @Slf4j
 @Tag(name = "Task Controller", description = "Task 컨트롤러입니다.")
@@ -44,7 +37,7 @@ import java.util.zip.ZipOutputStream;
 @RequestMapping("/api/task")
 public class TaskController {
     private final TaskService taskService;
-    private final UploadFileService uploadFileService;
+    private final FileService fileService;
 
     @Value("${file.dir}")
     private String fileDir;
@@ -119,7 +112,7 @@ public class TaskController {
     ) {
         Task task = this.taskService.findByIdAndCheckPassword(id, uploadFileRequestDto.getPassword());
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(this.uploadFileService.fileUploadTo(task.getId(), uploadFileRequestDto.getFile()));
+                .body(this.fileService.fileUploadTo(task.getId(), uploadFileRequestDto.getFile()));
     }
 
     @Operation(summary = "task에 업로드 된 파일을 조회합니다.")
@@ -142,23 +135,11 @@ public class TaskController {
     public ResponseEntity<?> downloadAllAttachments(@PathVariable Long id) {
         Task task = this.taskService.findByIdAndCheckPassword(id);
         List<UploadFile> attachments = task.getAttachments();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        // TODO: 비동기로 for문 돌게 수정해야함
-        try (ZipOutputStream zos = new ZipOutputStream(baos)) {
-            for (UploadFile attachment : attachments) {
-                UrlResource res = new UrlResource(attachment.getUrl());
-                // NOTE: 파일 이름이 중복이면 안됨
-                ZipEntry zipEntry = new ZipEntry(attachment.getOriginalFilename() + attachment.getFilename());
-                zos.putNextEntry(zipEntry);
-                StreamUtils.copy(res.getInputStream(), zos);
-                zos.closeEntry();
-            }
-        } catch (IOException e) {
-            throw new HttpStatusException(ErrorCode.FILE_DOWNLOAD_FAILED);
+        if (attachments == null || attachments.isEmpty()) {
+            throw new HttpStatusException(ErrorCode.EMPTY_FILES);
         }
-        ByteArrayResource resource = new ByteArrayResource(baos.toByteArray(), "application/octet-stream");
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=files.zip")
-                .body(resource);
+                .body(this.fileService.getByteArrayResource(attachments));
     }
 }
