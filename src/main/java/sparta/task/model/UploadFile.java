@@ -21,7 +21,11 @@ public class UploadFile extends Base {
 
     private String filename;
 
-    private String originalFileName;
+    private String originalFilename;
 
     private Long taskId;
+
+    private Long size;
+
+    private String type;
 }
