@@ -70,6 +70,6 @@ public class TaskService {
     }
 
     private Task findByIdOrThrow(Long id) {
-        return this.taskRepository.findById(id).orElseThrow(() -> new HttpStatusException(ErrorCode.NOT_FOUND));
+        return this.taskRepository.findById(id).orElseThrow(() -> new HttpStatusException(ErrorCode.TASK_NOT_FOUND));
     }
 }

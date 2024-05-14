@@ -19,7 +19,12 @@ public enum ErrorCode {
     INVALID_PASSWORD(HttpStatus.FORBIDDEN, "PASSWORD IS NOT CORRECT"),
 
     /*  404 NOT FOUND: 접근허용안됨*/
-    NOT_FOUND(HttpStatus.NOT_FOUND, "Not Found"),;
+    NOT_FOUND(HttpStatus.NOT_FOUND, "Not Found"),
+    TASK_NOT_FOUND(HttpStatus.NOT_FOUND, "Task Not Found"),
+
+    /* 500 */
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error"),
+    FILE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error");
 
     private final HttpStatus code;
     private final String message;

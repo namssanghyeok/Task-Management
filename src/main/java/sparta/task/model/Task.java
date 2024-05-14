@@ -9,6 +9,8 @@ import sparta.task.dto.UpdateTaskDto;
 import sparta.task.model.common.Base;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @SuperBuilder
 @Getter
@@ -29,6 +31,9 @@ public class Task extends Base {
     private String assignee;
 
     private String password;
+
+    @OneToMany(mappedBy = "taskId")
+    private List<UploadFile> attachments = new ArrayList<>();
 
     // domain logic
     public void updateBy(UpdateTaskDto updateTaskDto) {
