@@ -21,11 +21,16 @@ public class UploadFile extends Base {
 
     private String originalFilename;
 
-    private String path;
+    private String url;
 
     private Long taskId;
 
     private Long size;
 
     private String type;
+
+    public void setTaskId(Long taskId) {
+        this.taskId = taskId;
+    }
 }
+

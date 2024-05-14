@@ -33,7 +33,7 @@ public class Task extends Base {
     private String password;
 
     @OneToMany(mappedBy = "taskId")
-    private List<UploadFile> attachments = new ArrayList<>();
+    private List<UploadFile> attachments;
 
     // domain logic
     public void updateBy(UpdateTaskRequestDto updateTaskRequestDto) {
