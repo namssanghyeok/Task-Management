@@ -47,7 +47,7 @@ public class UploadFileController {
         Resource resource;
         UploadFile uploadFile = this.uploadFileService.getByFilename(filename);
         try {
-            resource = new UrlResource(uploadFile.getPath());
+            resource = new UrlResource(uploadFile.getUrl());
         } catch (MalformedURLException e) {
             throw new HttpStatusException(ErrorCode.FILE_DOWNLOAD_FAILED);
         }

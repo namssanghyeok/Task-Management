@@ -146,7 +146,7 @@ public class TaskController {
         // TODO: 비동기로 for문 돌게 수정해야함
         try (ZipOutputStream zos = new ZipOutputStream(baos)) {
             for (UploadFile attachment : attachments) {
-                UrlResource res = new UrlResource(attachment.getPath());
+                UrlResource res = new UrlResource(attachment.getUrl());
                 // NOTE: 파일 이름이 중복이면 안됨
                 ZipEntry zipEntry = new ZipEntry(attachment.getOriginalFilename() + attachment.getFilename());
                 zos.putNextEntry(zipEntry);
