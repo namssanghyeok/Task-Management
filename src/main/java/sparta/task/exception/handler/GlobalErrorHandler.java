@@ -1,4 +1,4 @@
-package sparta.task.exception.advice;
+package sparta.task.exception.handler;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -12,13 +12,12 @@ import sparta.task.exception.exceptions.HttpStatusException;
 
 import java.time.LocalDateTime;
 
-// TODO: task controller 로 설정
 @RestControllerAdvice
-public class TaskExceptionAdvice {
+public class GlobalErrorHandler {
 
     @ExceptionHandler
     ResponseEntity<?> handleException(HttpStatusException ex, HttpServletRequest request) {
-        return ResponseEntity.ok(
+        return ResponseEntity.status(ex.getErrorCode().getCode()).body(
                 CustomErrorResponse.builder()
                         .timestamp(LocalDateTime.now())
                         .error(ex.getErrorCode().getCode().getReasonPhrase())
@@ -36,7 +35,7 @@ public class TaskExceptionAdvice {
             FieldError fieldError = (FieldError) error;
             sb.append(String.format("%s %s\n", fieldError.getField(), fieldError.getDefaultMessage()));
         });
-        return ResponseEntity.ok(
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 CustomErrorResponse.builder()
                         .timestamp(LocalDateTime.now())
                         .error(HttpStatus.BAD_REQUEST.getReasonPhrase())
