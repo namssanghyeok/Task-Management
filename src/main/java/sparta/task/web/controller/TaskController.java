@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,12 +14,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import sparta.task.dto.request.CreateTaskRequestDto;
 import sparta.task.dto.request.DeleteTaskRequestDto;
-import sparta.task.dto.response.TaskResponseDto;
 import sparta.task.dto.request.UpdateTaskRequestDto;
+import sparta.task.dto.request.UploadFileRequestDto;
+import sparta.task.dto.response.TaskResponseDto;
 import sparta.task.exception.CustomErrorResponse;
+import sparta.task.model.Task;
 import sparta.task.service.TaskService;
 import sparta.task.service.UploadFileService;
 
@@ -54,7 +54,7 @@ public class TaskController {
     })
     @GetMapping("/{id}")
     ResponseEntity<?> showTaskById(@PathVariable Long id) {
-        return ResponseEntity.ok(this.taskService.getById(id));
+        return ResponseEntity.ok(this.taskService.showTaskById(id));
     }
 
     @Operation(summary = "모든 task를 조회합니다.")
@@ -85,7 +85,6 @@ public class TaskController {
             @ApiResponse(responseCode = "403", description = "password error", content = @Content(schema = @Schema(implementation = CustomErrorResponse.class), mediaType = "application/json")),
             @ApiResponse(responseCode = "404", description = "not found", content = @Content(schema = @Schema(implementation = CustomErrorResponse.class), mediaType = "application/json"))
     })
-
     @DeleteMapping("/{id}")
     ResponseEntity<?> deleteTask(@PathVariable Long id,
                                  @Valid @RequestBody DeleteTaskRequestDto deleteTaskRequestDto
@@ -94,25 +93,30 @@ public class TaskController {
         return ResponseEntity.noContent().build();
     }
 
-    // file upload / download
+    @Operation(summary = "task에 파일을 첨부합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "file upload success"),
+            @ApiResponse(responseCode = "400", description = "validation error"),
+            @ApiResponse(responseCode = "403", description = "password error"),
+            @ApiResponse(responseCode = "404", description = "task not found")
+    })
     @PostMapping("/{id}/attachment/upload")
     public ResponseEntity<?> uploadFile(@PathVariable Long id,
-                                        // TODO: ModelAttribute로 file과 password를 받아야함
-                                        @RequestParam("file") MultipartFile file,
-                                        // TODO: password 체크도 해야함
-                                        @RequestParam(value = "password", required = false) String password,
-                                        HttpServletRequest request
+                                        @Valid @ModelAttribute UploadFileRequestDto uploadFileRequestDto
     ) {
-        // TODO: password 처리도 해야함
-        TaskResponseDto task = this.taskService.getById(id);
-        return ResponseEntity.ok(this.uploadFileService.fileUploadTo(task.getId(), file));
+        Task task = this.taskService.findById(id, uploadFileRequestDto.getPassword());
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(this.uploadFileService.fileUploadTo(task.getId(), uploadFileRequestDto.getFile()));
     }
 
-    // 업로드 된 파일 조회
+    @Operation(summary = "task에 업로드 된 파일을 조회합니다.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = @Content(array = @ArraySchema(schema = @Schema(implementation = UploadFileRequestDto.class)))),
+            @ApiResponse(responseCode = "404", description = "task not found")
+    })
     @GetMapping("/{id}/attachment")
-    public String showFiles(@PathVariable Long id) {
-        //
-        return "hello world";
+    public ResponseEntity<?> showFiles(@PathVariable Long id) {
+        return ResponseEntity.ok(this.taskService.findUploadFilesByTaskId(id));
     }
 
     // task에 업로드 된 전체 파일 다운로드
