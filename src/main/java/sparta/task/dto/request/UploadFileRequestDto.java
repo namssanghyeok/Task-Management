@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
+import sparta.task.validation.annotation.File;
 
 @Getter
 @Setter
@@ -15,5 +16,6 @@ public class UploadFileRequestDto {
     @Schema(example = "password")
     private String password;
 
+    @File
     private MultipartFile file;
 }
