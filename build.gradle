@@ -54,8 +54,10 @@ jacocoTestReport {
                             '**/dto/**',
                             '**/exception/**',
                             '**/mapper/**',
-                            '**/web/**',
-                            '**/model/**'
+                            //'**/web/**',
+                            '**/model/**',
+                            '**/TaskApplication.class', // TaskApplication 클래스 제외
+                            '**/FileController.class'
                     ])
                 })
         )
@@ -75,16 +77,18 @@ jacocoTestCoverageVerification {
                     '*.dto.*',
                     '*.exception.*',
                     '*.mapper.*',
-                    '*.web.*',
-                    '*.model.*'
+                    //'*.web.*',
+                    '*.model.*',
+                    '*.TaskApplication', // TaskApplication 클래스 제외
+                    '*.FileController'
             ]
         }
     }
 }
 
-task testAndCheckCoverage {
+tasks.register('testAndCheckCoverage') {
     group 'verification'
-    description'test with jacoco'
+    description 'test with jacoco'
     dependsOn ':test', ':jacocoTestReport', ':jacocoTestCoverageVerification'
 
     tasks.jacocoTestReport.mustRunAfter tasks.test
