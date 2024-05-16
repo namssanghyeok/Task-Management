@@ -39,7 +39,7 @@ public class TaskService {
         return this.taskMapper.toTaskDto(task);
     }
 
-    public Task findByIdAndCheckPassword(long taskId) {
+    public Task findById(long taskId) {
         return this.findByIdOrThrow(taskId);
     }
 

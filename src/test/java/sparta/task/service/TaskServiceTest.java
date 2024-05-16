@@ -1,183 +1,289 @@
 package sparta.task.service;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
-import org.springframework.transaction.annotation.Transactional;
 import sparta.task.dto.request.CreateTaskRequestDto;
 import sparta.task.dto.request.DeleteTaskRequestDto;
 import sparta.task.dto.request.UpdateTaskRequestDto;
 import sparta.task.dto.response.TaskResponseDto;
 import sparta.task.exception.exceptions.HttpStatusException;
+import sparta.task.mapper.TaskMapper;
+import sparta.task.mapper.UploadFileMapper;
 import sparta.task.model.Task;
+import sparta.task.model.UploadFile;
+import sparta.task.repository.TaskRepository;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
-@SpringBootTest
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+@ExtendWith(MockitoExtension.class)
 class TaskServiceTest {
-    @Autowired
-    private TaskService taskService;
+    @Mock
+    private TaskRepository taskRepository;
+    @Mock
+    private TaskMapper taskMapper;
+    @Mock
+    private UploadFileMapper uploadFileMapper;
 
-    // db에 쌓이는지 확인 -> db에 쌓임. @Transactional 어노테이션을 사용함으로써 db에 쌓이지 않게 만들어야함.
-    // 아니면 테스트에 사용하는 또 다른 db 설정을 하던가..
-    // 왜 transactional을 사용하면 db에 쌓이지 않는가? 테스트 환경에서 이 어노테이션이 달린 채로 실행이 되면 자동으로 commit이 안되는건가?
-    // 테스트 환경에서만 그러는건가?
-    @Test
-    @DisplayName("생성 성공")
-    @Transactional
-    void createTask() {
-        // given when then
-        CreateTaskRequestDto createTaskRequestDto = new CreateTaskRequestDto();
-        createTaskRequestDto.setAssignee("assignee");
-        createTaskRequestDto.setPassword("1234");
-        createTaskRequestDto.setTitle("title");
-        createTaskRequestDto.setContent("content");
-        TaskResponseDto task = this.taskService.createTask(createTaskRequestDto);
-        TaskResponseDto taskResponseDto = this.taskService.showTaskById(task.getId());
-        assertEquals(task.getId(), taskResponseDto.getId());
+    @InjectMocks
+    private TaskService taskService; private Task task;
+    private TaskResponseDto taskResponseDto;
+    private CreateTaskRequestDto createTaskRequestDto;
+    private DeleteTaskRequestDto deleteTaskRequestDto;
+    private UpdateTaskRequestDto updateTaskRequestDto;
+
+    @BeforeEach
+    public void beforeEach() {
+        createTaskRequestDto = CreateTaskRequestDto.builder().title("title").content("content").password("1234").build();
+        task = Task.builder().id((long) 1).title("title").content("content").password("1234").build();
+        taskResponseDto = TaskResponseDto.builder().id((long) 1).title("title").content("content").build();
+        deleteTaskRequestDto = DeleteTaskRequestDto.builder().password("1234").build();
+        updateTaskRequestDto = UpdateTaskRequestDto.builder().title("hello").password("1234").build();
     }
 
     @Test
-    @DisplayName("생성 후 id를 이용해 찾을 수 있어야함")
-    @Transactional
-    void showTaskById() {
-        // given when then
-        CreateTaskRequestDto createTaskRequestDto = new CreateTaskRequestDto();
-        createTaskRequestDto.setAssignee("assignee");
-        createTaskRequestDto.setPassword("1234");
-        createTaskRequestDto.setTitle("title");
-        createTaskRequestDto.setContent("content");
-        TaskResponseDto task = this.taskService.createTask(createTaskRequestDto);
-        TaskResponseDto taskResponseDto = this.taskService.showTaskById(task.getId());
-        assertEquals(task.getId(), taskResponseDto.getId());
+    @DisplayName("task 생성")
+    void createTask_success() {
+        // given
+        // 가상으로 repository 의 save가 실행되면 task가 return되게 한다.
+        Mockito.when(this.taskRepository.save(Mockito.any(Task.class))).thenReturn(task);
+        // 가상으로 toTaskDto 가 실행되면 TaskResponseDto가 반환되도록 한다.
+        Mockito.when(this.taskMapper.toTaskDto(Mockito.any(Task.class))).thenReturn(taskResponseDto);
+        // 가상으로 createTaskDtoToEntity 가 실행 되면 createTaskDto가 반환되도록한다.
+        Mockito.when(this.taskMapper.CreateTaskDtoToEntity(Mockito.any(CreateTaskRequestDto.class))).thenReturn(task);
+
+        // when
+        TaskResponseDto res = this.taskService.createTask(createTaskRequestDto);
+
+        // then
+        assertThat(res.getId()).isEqualTo(task.getId());
     }
 
     @Test
-    @DisplayName("존재하지 않는 id로 찾으면 404 에러가 발생해야함")
-    @Transactional
-    void showTaskByIdNotFound() {
-        // 이렇게해도 되나..?
+    @DisplayName("생성 후에는 ID를 이용해 찾을 수 있어야함")
+    void taskService_showById() {
+        // given
+        Optional<Task> taskOptional = Optional.of(task);
+        Mockito.when(this.taskRepository.findById(Mockito.any(Long.class))).thenReturn(taskOptional);
+        Mockito.when(this.taskMapper.toTaskDto(Mockito.any(Task.class))).thenReturn(taskResponseDto);
+
+        // when
+        TaskResponseDto res = this.taskService.showTaskById(1);
+
+        // then
+        assertThat(res).isEqualTo(taskResponseDto);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 ID를 이용해 찾으면 404 예외가 발생함")
+    void taskService_showBy_NotFound() {
+        // given
+        Mockito.when(this.taskRepository.findById(Mockito.any(Long.class))).thenThrow(HttpStatusException.class);
+
+        // when & then
+        assertThrows(HttpStatusException.class, () -> this.taskService.showTaskById(1));
+    }
+
+    @Test
+    @DisplayName("삭제 된 Task를 찾으면 400 예외가 발생")
+    void showById_alreadyDeleted() {
+        // given
+        Mockito.when(this.taskRepository.findById(Mockito.any(Long.class))).thenReturn(Optional.of(task));
+        task.delete();
+
         try {
-            this.taskService.showTaskById(1000);
+            // when
+            this.taskService.showTaskById(1L);
         } catch (HttpStatusException e) {
-            assertEquals(HttpStatus.NOT_FOUND, e.getErrorCode().getCode());
+            // then
+            assertThat(e.getErrorCode().getCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         }
     }
 
     @Test
-    @DisplayName("이미삭제된 task를 찾으면 400 에러가 발생해야함")
-    @Transactional
-    void showTaskByAlreadyDeleted() {
-        //given
-        CreateTaskRequestDto createTaskRequestDto = new CreateTaskRequestDto();
-        createTaskRequestDto.setAssignee("assignee");
-        createTaskRequestDto.setPassword("1234");
-        createTaskRequestDto.setTitle("title");
-        createTaskRequestDto.setContent("content");
-        TaskResponseDto task = this.taskService.createTask(createTaskRequestDto);
-        DeleteTaskRequestDto deleteTaskRequestDto = new DeleteTaskRequestDto();
-        deleteTaskRequestDto.setPassword("1234");
+    @DisplayName("ID로 찾기 성공")
+    void findById_success() {
+        // given
+        Mockito.when(this.taskRepository.findById(Mockito.any(Long.class))).thenReturn(Optional.of(task));
+        // when
+        Task foundTask = this.taskService.findById(1L);
+        // then
+        assertThat(foundTask.getId()).isEqualTo(task.getId());
+    }
 
-        //when
-        this.taskService.deleteBy(task.getId(), deleteTaskRequestDto);
+    @Test
+    @DisplayName("PASSWORD 일치하면 성공")
+    void findTaskById_success() {
+        // given
+        Mockito.when(this.taskRepository.findById(Mockito.any(Long.class)))
+                .thenReturn(Optional.of(task));
 
-        //then
+        // when
+        Task foundTask = this.taskService.findByIdAndCheckPassword(1, "1234");
+
+        // then
+        assertThat(foundTask).isNotNull();
+    }
+
+    @Test
+    @DisplayName("PASSWORD가 일치하지 않으면 예외발생")
+    void findByIdAndCheckPassword_failed() {
+        // given
+        Mockito.when(this.taskRepository.findById(Mockito.any(Long.class)))
+                .thenReturn(Optional.of(task));
+        // when & then
+        assertThrows(HttpStatusException.class, () -> this.taskService.findByIdAndCheckPassword(1, "12345"));
+    }
+
+    // TODO: 삭제 된 task는 목록에 나오지 않는 작업은 레포지토리 테스트에서 해야함
+    @Test
+    void showAll_success() {
+        // given
+        List<Task> tasks = new ArrayList<>();
+        tasks.add(task);
+
+        Mockito.when(this.taskRepository.findAllByDeletedAtIsNull(Sort.by(Sort.Direction.DESC, "createdAt")))
+                .thenReturn(tasks);
+
+        Mockito.when(this.taskMapper.toTaskDto(Mockito.any(Task.class)))
+                .thenReturn(taskResponseDto);
+
+        // when
+        List<TaskResponseDto> taskResponseDtos = this.taskService.showAll();
+        // then
+        assertThat(taskResponseDtos).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("업데이트 성공")
+    void updateTaskBy_success() {
+        // given
+        Mockito.when(this.taskRepository.findById(Mockito.any(Long.class)))
+                .thenReturn(Optional.of(task));
+
+        TaskResponseDto updatedResponseDto = TaskResponseDto.builder().id(1L).title("hello").build();
+        Mockito.when(this.taskMapper.toTaskDto(Mockito.any(Task.class)))
+                .thenReturn(updatedResponseDto);
+
+        Task updatedTask = Task.builder().id(1L).title("hello").build();
+        Mockito.when(this.taskRepository.save(Mockito.any(Task.class))).thenReturn(updatedTask);
+
+        // when
+        TaskResponseDto updated = this.taskService.updateTaskBy(1L, updateTaskRequestDto);
+
+        // then
+        assertThat(updated.getTitle()).isEqualTo(task.getTitle());
+    }
+
+    @Test
+    @DisplayName("잘못된 PASSWORD로 업데이트 시 403 예외 발생")
+    void updateTaskBy_wrongPassword() {
+        // given
+        Mockito.when(this.taskRepository.findById(Mockito.any(Long.class))).thenReturn(Optional.of(task));
+        UpdateTaskRequestDto wrongPasswordDto = UpdateTaskRequestDto.builder().password("12345").build();
         try {
-            this.taskService.showTaskById(task.getId());
+            // when
+            this.taskService.updateTaskBy(1L, wrongPasswordDto);
         } catch (HttpStatusException e) {
-            assertEquals(e.getErrorCode().getCode(), HttpStatus.BAD_REQUEST);
+            // then
+            assertThat(e.getErrorCode().getCode()).isEqualTo(HttpStatus.FORBIDDEN);
         }
     }
 
-
+    /**
+     * task 자체도 mocking 하고, 결과가 아닌 특정 메서드가 실행되었는지 여부로 테스트의 성공 여부 판별
+     */
     @Test
-    @DisplayName("ID를 이용해 찾고 password로 검증")
-    @Transactional
-    void findByIdAndCheckPasswordSuccess() {
-        CreateTaskRequestDto createTaskRequestDto = new CreateTaskRequestDto();
-        createTaskRequestDto.setAssignee("assignee");
-        createTaskRequestDto.setPassword("1234");
-        createTaskRequestDto.setTitle("title");
-        createTaskRequestDto.setContent("content");
-        TaskResponseDto taskDto = this.taskService.createTask(createTaskRequestDto);
-        //given when then
+    @DisplayName("task 삭제 - 성공")
+    void deleteTaskBy_success() {
+        // given
+        Task mockTask = Mockito.mock(Task.class);
 
-        try {
-            Task task = this.taskService.findByIdAndCheckPassword(taskDto.getId(), "1234");
-            assertEquals(task.getId(), taskDto.getId());
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        Mockito.when(this.taskRepository.findById(Mockito.any(Long.class)))
+                .thenReturn(Optional.of(mockTask));
+        Mockito.when(mockTask.checkPassword("1234")).thenReturn(false);
+        Mockito.when(mockTask.isDeleted()).thenReturn(false);
+        // when
+        this.taskService.deleteBy(1L, DeleteTaskRequestDto.builder().password("1234").build());
+        // then - 아래의 메서드들이 실행 되었는지 확인
+        Mockito.verify(mockTask).isDeleted();
+        Mockito.verify(this.taskRepository).save(mockTask);
+
+        // 실행된 횟수도 지정할 수 있음
+        // Mockito.verify(task, Mockito.times(1)).isDeleted();
+        // Mockito.verify(this.taskRepository, Mockito.times(1)).save(task);
     }
 
     @Test
-    @DisplayName("ID를 이용해 찾았지만 password가 틀리면 403에러 발생")
-    @Transactional
-    void findByIdAndCheckPasswordFailed() {
-        CreateTaskRequestDto createTaskRequestDto = new CreateTaskRequestDto();
-        createTaskRequestDto.setAssignee("assignee");
-        createTaskRequestDto.setPassword("1234");
-        createTaskRequestDto.setTitle("title");
-        createTaskRequestDto.setContent("content");
-        TaskResponseDto taskDto = this.taskService.createTask(createTaskRequestDto);
-        //given when then
+    @DisplayName("task 삭제 - 잘못된 비밀번호로 삭제시 403 예외")
+    void deleteTaskBy_wrongPassword() {
+        // given
+        Mockito.when(this.taskRepository.findById(Mockito.any(Long.class)))
+                .thenReturn(Optional.of(task));
         try {
-            this.taskService.findByIdAndCheckPassword(taskDto.getId(), "asd");
+            // when
+            assertThrows(HttpStatusException.class, () -> this.taskService.deleteBy(1L, DeleteTaskRequestDto.builder().password("12345").build()));
+            this.taskService.deleteBy(1L, DeleteTaskRequestDto.builder().password("12345").build());
         } catch (HttpStatusException e) {
-            assertEquals(e.getErrorCode().getCode(), HttpStatus.FORBIDDEN);
+            // then
+            assertThat(e.getErrorCode().getCode()).isEqualTo(HttpStatus.FORBIDDEN);
         }
     }
 
-//    @Test
-//    @Transactional
-//    void showAll() {
-//        CreateTaskRequestDto createTaskRequestDto = new CreateTaskRequestDto();
-//        createTaskRequestDto.setAssignee("assignee");
-//        createTaskRequestDto.setPassword("1234");
-//        createTaskRequestDto.setTitle("title");
-//        createTaskRequestDto.setContent("content");
-//        this.taskService.createTask(createTaskRequestDto);
-//        List<TaskResponseDto> taskResponseDtos = this.taskService.showAll();
-//        assertEquals(taskResponseDtos.size(), 1);
-//    }
-
     @Test
-    @DisplayName("제목 업데이트 성공")
-    @Transactional
-    void updateTaskBySuccess() {
-        CreateTaskRequestDto createTaskRequestDto = new CreateTaskRequestDto();
-        createTaskRequestDto.setAssignee("assignee");
-        createTaskRequestDto.setPassword("1234");
-        createTaskRequestDto.setTitle("title");
-        createTaskRequestDto.setContent("content");
-        TaskResponseDto taskDto = this.taskService.createTask(createTaskRequestDto);
-        UpdateTaskRequestDto updateTaskRequestDto = new UpdateTaskRequestDto();
-        updateTaskRequestDto.setTitle("updated");
-        updateTaskRequestDto.setPassword("1234");
-        TaskResponseDto res = this.taskService.updateTaskBy(taskDto.getId(), updateTaskRequestDto);
-        assertEquals(res.getTitle(), "updated");
-    }
-
-    @Test
-    @DisplayName("패스워드 에러로 인한 업데이트 실패 403 에러 발생")
-    @Transactional
-    void updateTaskByFailedPassword() {
-        CreateTaskRequestDto createTaskRequestDto = new CreateTaskRequestDto();
-        createTaskRequestDto.setAssignee("assignee");
-        createTaskRequestDto.setPassword("1234");
-        createTaskRequestDto.setTitle("title");
-        createTaskRequestDto.setContent("content");
-        TaskResponseDto taskDto = this.taskService.createTask(createTaskRequestDto);
-        UpdateTaskRequestDto updateTaskRequestDto = new UpdateTaskRequestDto();
-        updateTaskRequestDto.setTitle("updated");
-        updateTaskRequestDto.setPassword("11");
+    @DisplayName("task 삭제 - 존재하지 않는 task 삭제시 404 예외")
+    void deleteTaskBy_notFound() {
+        // given
+        // when
+        // then
         try {
-            this.taskService.updateTaskBy(taskDto.getId(), updateTaskRequestDto);
+            assertThrows(HttpStatusException.class, () -> this.taskService.deleteBy(10L, DeleteTaskRequestDto.builder().password("1234").build()));
+            this.taskService.deleteBy(10L, DeleteTaskRequestDto.builder().password("1234").build());
         } catch (HttpStatusException e) {
-            assertEquals(e.getErrorCode().getCode(), HttpStatus.FORBIDDEN);
+            assertThat(e.getErrorCode().getCode()).isEqualTo(HttpStatus.NOT_FOUND);
         }
     }
-    // TODO: jacoco 도입
+
+    @Test
+    @DisplayName("task 삭제 - 이미 삭제된 task 삭제 시도시 400 예외")
+    void deleteTaskBy_taskAlreadyDeleted() {
+        // given
+        Mockito.when(this.taskRepository.findById(Mockito.any(Long.class)))
+                .thenReturn(Optional.of(Task.builder().id(1L).title("hello").password("1234").deletedAt(LocalDateTime.now()).build()));
+        try {
+            // when
+            assertThrows(HttpStatusException.class, () -> this.taskService.deleteBy(1L, DeleteTaskRequestDto.builder().password("1234").build()));
+            this.taskService.deleteBy(1L, DeleteTaskRequestDto.builder().password("1234").build());
+        } catch (HttpStatusException e) {
+            // then
+            assertThat(e.getErrorCode().getCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @Test
+    @DisplayName("task 에 업로드 된 파일 가져오기")
+    void findTaskBy_success() {
+        // given
+        List<UploadFile> files = new ArrayList<>();
+        Task mockTask = Mockito.mock(Task.class);
+        Mockito.when(this.taskRepository.findById(Mockito.any(Long.class)))
+                .thenReturn(Optional.of(mockTask));
+        // when
+        this.taskService.findUploadFilesByTaskId(1L);
+        // then
+        Mockito.verify(mockTask).getAttachments();
+    }
 }

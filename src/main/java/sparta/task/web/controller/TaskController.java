@@ -133,7 +133,7 @@ public class TaskController {
     })
     @GetMapping("/{id}/attachment/download")
     public ResponseEntity<?> downloadAllAttachments(@PathVariable Long id) {
-        Task task = this.taskService.findByIdAndCheckPassword(id);
+        Task task = this.taskService.findById(id);
         List<UploadFile> attachments = task.getAttachments();
         if (attachments == null || attachments.isEmpty()) {
             throw new HttpStatusException(ErrorCode.EMPTY_FILES);
