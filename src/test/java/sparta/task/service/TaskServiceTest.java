@@ -39,7 +39,9 @@ class TaskServiceTest {
     private UploadFileMapper uploadFileMapper;
 
     @InjectMocks
-    private TaskService taskService; private Task task;
+    private TaskService taskService;
+
+    private Task task;
     private TaskResponseDto taskResponseDto;
     private CreateTaskRequestDto createTaskRequestDto;
     private DeleteTaskRequestDto deleteTaskRequestDto;
