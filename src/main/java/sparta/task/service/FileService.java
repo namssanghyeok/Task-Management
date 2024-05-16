@@ -40,13 +40,12 @@ public class FileService {
         UploadFile uploadFile = this.fileStore.save(file);
         uploadFile.setTaskId(taskId);
         try {
-            this.uploadFileRepository.save(uploadFile);
+            return this.uploadFileMapper.toUploadFileResponseDto(this.uploadFileRepository.save(uploadFile));
         } catch (Exception e) {
             // 저장 된 파일 삭제
             this.fileStore.delete(uploadFile);
             throw new HttpStatusException(ErrorCode.FILE_UPLOAD_FAILED);
         }
-        return this.uploadFileMapper.toUploadFileResponseDto(this.uploadFileRepository.save(uploadFile));
     }
 
     public UploadFile getByFilename(String filename) {
