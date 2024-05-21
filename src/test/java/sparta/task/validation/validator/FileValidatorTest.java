@@ -1,8 +1,9 @@
 package sparta.task.validation.validator;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
@@ -10,12 +11,13 @@ import org.springframework.mock.web.MockMultipartFile;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ExtendWith(MockitoExtension.class)
 class FileValidatorTest {
     private FileValidator fileValidator;
 
-    @BeforeEach
-    void beforeEach() {
+    @BeforeAll
+    void beforeAll() {
         this.fileValidator = new FileValidator();
     }
 
