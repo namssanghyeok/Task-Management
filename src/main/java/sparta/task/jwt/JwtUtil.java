@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import sparta.task.model.UserRoleEnum;
+import sparta.task.model.User;
 
 import java.security.Key;
 import java.util.Base64;
@@ -20,17 +20,20 @@ public class JwtUtil {
     // Header KEY 값
     public static final String AUTHORIZATION_HEADER = "Authorization";
     // 사용자 권한 값의 KEY
-    public static final String AUTHORIZATION_KEY = "auth";
+    public static final String CLAIM_ROLE = "role";
+    public static final String CLAIM_ID = "id";
+    public static final String CLAIM_NICKNAME = "nickname";
+
     // Token 식별자
     public static final String BEARER_PREFIX = "Bearer ";
     // 토큰 만료시간
     private final long ACCESS_EXPIRATION_TOKEN_TIME = 60 * 60 * 1000L; // 60분
     private final long REFRESH_EXPIRATION_TIME = ACCESS_EXPIRATION_TOKEN_TIME * 24 * 7;
+    private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
     @Value("${jwt.secret.key}") // Base64 Encode 한 SecretKey
     private String secretKey;
     private Key key;
-    private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
     @PostConstruct
     public void init() {
@@ -39,26 +42,29 @@ public class JwtUtil {
     }
 
     // 토큰 생성
-    public String createAccessToken(String username, UserRoleEnum role) {
+    public String createAccessToken(User user) {
         Date date = new Date();
 
         return Jwts.builder()
-                        .setSubject(username) // 사용자 식별자값(ID)
-                        .claim(AUTHORIZATION_KEY, role) // 사용자 권한
-                        .setExpiration(new Date(date.getTime() + ACCESS_EXPIRATION_TOKEN_TIME)) // 만료 시간
-                        .setIssuedAt(date) // 발급일
-                        .signWith(key, signatureAlgorithm) // 암호화 알고리즘
-                        .compact();
+                .setSubject(user.getUsername()) // 사용자 식별자값(ID)
+                .setExpiration(new Date(date.getTime() + ACCESS_EXPIRATION_TOKEN_TIME)) // 만료 시간
+                .setIssuedAt(date) // 발급일
+                .signWith(key, signatureAlgorithm) // 암호화 알고리즘
+                // claims
+                .claim(CLAIM_ROLE, user.getRole()) // 사용자 권한
+                .claim(CLAIM_ID, user.getId())
+                .claim(CLAIM_NICKNAME, user.getNickname())
+                .compact();
     }
 
     public String createRefreshToken(String username) {
         Date date = new Date();
 
         return Jwts.builder()
-                        .setSubject(username) // 사용자 식별자값(ID)
-                        .setExpiration(new Date(date.getTime() + REFRESH_EXPIRATION_TIME)) // 만료 시간
-                        .setIssuedAt(date) // 발급일
-                        .compact();
+                .setSubject(username) // 사용자 식별자값(ID)
+                .setExpiration(new Date(date.getTime() + REFRESH_EXPIRATION_TIME)) // 만료 시간
+                .setIssuedAt(date) // 발급일
+                .compact();
     }
 
     // header 에서 JWT 가져오기

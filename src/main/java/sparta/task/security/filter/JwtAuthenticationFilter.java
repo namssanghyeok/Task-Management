@@ -17,7 +17,7 @@ import sparta.task.dto.TokenDto;
 import sparta.task.dto.request.LoginRequestDto;
 import sparta.task.exception.CustomErrorResponse;
 import sparta.task.jwt.JwtUtil;
-import sparta.task.model.UserRoleEnum;
+import sparta.task.model.User;
 import sparta.task.security.principal.UserPrincipal;
 
 import java.io.IOException;
@@ -55,9 +55,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws ServletException, IOException {
         String username = ((UserPrincipal) authResult.getPrincipal()).getUsername();
-        UserRoleEnum role = ((UserPrincipal) authResult.getPrincipal()).getUser().getRole();
+        User user = ((UserPrincipal) authResult.getPrincipal()).getUser();
 
-        String accessToken = jwtUtil.createAccessToken(username, role);
+        String accessToken = jwtUtil.createAccessToken(user);
         String refreshToken = jwtUtil.createRefreshToken(username);
 
         TokenDto tokenDto = TokenDto.builder()
