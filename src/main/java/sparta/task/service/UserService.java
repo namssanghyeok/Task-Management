@@ -3,8 +3,8 @@ package sparta.task.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import sparta.task.dto.SignupUserRequestDto;
-import sparta.task.dto.UserResponseDto;
+import sparta.task.dto.request.SignupUserRequestDto;
+import sparta.task.dto.response.UserResponseDto;
 import sparta.task.mapper.UserMapper;
 import sparta.task.repository.UserRepository;
 

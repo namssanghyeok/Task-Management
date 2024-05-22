@@ -1,8 +1,10 @@
 package sparta.task.security.config;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -35,8 +37,12 @@ public class SecurityConfig {
         http.sessionManagement((httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)));
 
+        http.headers(headers -> headers.frameOptions().disable());
+
         http.authorizeHttpRequests(requests ->
-                requests.anyRequest().authenticated()
+                requests.requestMatchers(HttpMethod.POST, "/api/user", "/api/user/").anonymous()
+                        .requestMatchers(PathRequest.toH2Console()).permitAll()
+                        .anyRequest().authenticated()
         );
 
         return http.build();

@@ -3,8 +3,8 @@ package sparta.task.mapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import sparta.task.dto.SignupUserRequestDto;
-import sparta.task.dto.UserResponseDto;
+import sparta.task.dto.request.SignupUserRequestDto;
+import sparta.task.dto.response.UserResponseDto;
 import sparta.task.model.User;
 
 @Component

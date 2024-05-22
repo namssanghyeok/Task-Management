@@ -1,4 +1,4 @@
-package sparta.task.dto;
+package sparta.task.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
