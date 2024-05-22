@@ -1,17 +1,19 @@
 package sparta.task.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
-import sparta.task.model.common.Base;
+import sparta.task.model.common.TimeStamp;
 
 @Getter
 @Entity
-@SuperBuilder
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "upload_file")
-public class UploadFile extends Base {
+public class UploadFile extends TimeStamp {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "file_id")

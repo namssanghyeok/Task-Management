@@ -5,6 +5,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import sparta.task.dto.request.CreateTaskRequestDto;
 import sparta.task.dto.request.DeleteTaskRequestDto;
+import sparta.task.dto.request.PasswordRequestDto;
 import sparta.task.dto.request.UpdateTaskRequestDto;
 import sparta.task.dto.response.TaskResponseDto;
 import sparta.task.dto.response.UploadFileResponseDto;
@@ -79,7 +80,7 @@ public class TaskService {
                 .toList();
     }
 
-    public void deleteBy(Long id, DeleteTaskRequestDto deleteTaskRequestDto) {
+    public void deleteBy(Long id, PasswordRequestDto deleteTaskRequestDto) {
         Task task = this.findByIdOrThrow(id);
         if (task.checkPassword(deleteTaskRequestDto.getPassword())) {
             throw new HttpStatusException(ErrorCode.INVALID_PASSWORD);
@@ -87,7 +88,6 @@ public class TaskService {
         if (task.isDeleted()) {
             throw new HttpStatusException(ErrorCode.ALREADY_DELETED);
         }
-
         task.delete();
         this.taskRepository.save(task);
     }

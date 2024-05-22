@@ -24,7 +24,7 @@ public class FileController {
 
     @DeleteMapping("/{filename}")
     public ResponseEntity<?> deleteFile(@PathVariable String filename,
-                                        @Valid @RequestBody PasswordRequestDto passwordRequestDto
+                                        @Valid @ModelAttribute PasswordRequestDto passwordRequestDto
     ) {
         UploadFile uploadFile = this.fileService.getByFilename(filename);
         Long taskId = uploadFile.getTaskId();

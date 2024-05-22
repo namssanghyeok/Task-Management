@@ -37,7 +37,6 @@ public class LocalFileStore implements FileStore {
                         .size(file.getSize())
                         .filename(filename)
                         .url(URL_PREFIX + this.getPath(filename))
-                        .createdAt(LocalDateTime.now())
                         .build();
     }
 

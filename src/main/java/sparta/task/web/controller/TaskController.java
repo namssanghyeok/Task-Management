@@ -14,10 +14,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import sparta.task.dto.request.CreateTaskRequestDto;
-import sparta.task.dto.request.DeleteTaskRequestDto;
-import sparta.task.dto.request.UpdateTaskRequestDto;
-import sparta.task.dto.request.UploadFileRequestDto;
+import sparta.task.dto.request.*;
 import sparta.task.dto.response.TaskResponseDto;
 import sparta.task.exception.CustomErrorResponse;
 import sparta.task.exception.ErrorCode;
@@ -89,9 +86,9 @@ public class TaskController {
     })
     @DeleteMapping("/{id}")
     ResponseEntity<?> deleteTask(@PathVariable Long id,
-                                 @Valid @RequestBody DeleteTaskRequestDto deleteTaskRequestDto
+                                 @Valid @ModelAttribute PasswordRequestDto passwordRequestDto
     ) {
-        this.taskService.deleteBy(id, deleteTaskRequestDto);
+        this.taskService.deleteBy(id, passwordRequestDto);
         return ResponseEntity.noContent().build();
     }
 

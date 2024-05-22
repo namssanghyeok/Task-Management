@@ -15,7 +15,6 @@ public class TaskMapper {
                 .content(createTaskRequestDto.getContent())
                 .assignee(createTaskRequestDto.getAssignee())
                 .password(createTaskRequestDto.getPassword())
-                .createdAt(LocalDateTime.now())
                 .build();
     }
 

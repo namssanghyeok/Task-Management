@@ -2,23 +2,23 @@ package sparta.task.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.DynamicInsert;
 import sparta.task.dto.request.UpdateTaskRequestDto;
-import sparta.task.model.common.Base;
+import sparta.task.model.common.TimeStamp;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
-@SuperBuilder
+@Builder
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
+@DynamicInsert
 @Table(name = "task")
-public class Task extends Base {
+@Entity
+public class Task extends TimeStamp {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "task_id")
@@ -46,7 +46,6 @@ public class Task extends Base {
         if (updateTaskRequestDto.getAssignee() != null && !updateTaskRequestDto.getAssignee().isEmpty()) {
             this.assignee = updateTaskRequestDto.getAssignee();
         }
-        this.changeUpdatedAt(LocalDateTime.now());
     }
 
     public void delete() {

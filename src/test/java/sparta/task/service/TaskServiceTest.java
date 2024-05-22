@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import sparta.task.dto.request.CreateTaskRequestDto;
 import sparta.task.dto.request.DeleteTaskRequestDto;
+import sparta.task.dto.request.PasswordRequestDto;
 import sparta.task.dto.request.UpdateTaskRequestDto;
 import sparta.task.dto.response.TaskResponseDto;
 import sparta.task.exception.exceptions.HttpStatusException;
@@ -219,7 +220,7 @@ class TaskServiceTest {
         Mockito.when(mockTask.checkPassword("1234")).thenReturn(false);
         Mockito.when(mockTask.isDeleted()).thenReturn(false);
         // when
-        this.taskService.deleteBy(1L, DeleteTaskRequestDto.builder().password("1234").build());
+        this.taskService.deleteBy(1L, PasswordRequestDto.builder().password("1234").build());
         // then - 아래의 메서드들이 실행 되었는지 확인
         Mockito.verify(mockTask).isDeleted();
         Mockito.verify(this.taskRepository).save(mockTask);
@@ -237,8 +238,8 @@ class TaskServiceTest {
                 .thenReturn(Optional.of(task));
         try {
             // when
-            assertThrows(HttpStatusException.class, () -> this.taskService.deleteBy(1L, DeleteTaskRequestDto.builder().password("12345").build()));
-            this.taskService.deleteBy(1L, DeleteTaskRequestDto.builder().password("12345").build());
+            assertThrows(HttpStatusException.class, () -> this.taskService.deleteBy(1L, PasswordRequestDto.builder().password("12345").build()));
+            this.taskService.deleteBy(1L, PasswordRequestDto.builder().password("12345").build());
         } catch (HttpStatusException e) {
             // then
             assertThat(e.getErrorCode().getCode()).isEqualTo(HttpStatus.FORBIDDEN);
@@ -252,8 +253,8 @@ class TaskServiceTest {
         // when
         // then
         try {
-            assertThrows(HttpStatusException.class, () -> this.taskService.deleteBy(10L, DeleteTaskRequestDto.builder().password("1234").build()));
-            this.taskService.deleteBy(10L, DeleteTaskRequestDto.builder().password("1234").build());
+            assertThrows(HttpStatusException.class, () -> this.taskService.deleteBy(10L, PasswordRequestDto.builder().password("1234").build()));
+            this.taskService.deleteBy(10L, PasswordRequestDto.builder().password("1234").build());
         } catch (HttpStatusException e) {
             assertThat(e.getErrorCode().getCode()).isEqualTo(HttpStatus.NOT_FOUND);
         }
@@ -263,12 +264,14 @@ class TaskServiceTest {
     @DisplayName("task 삭제 - 이미 삭제된 task 삭제 시도시 400 예외")
     void deleteTaskBy_taskAlreadyDeleted() {
         // given
+        Task mockTask = Mockito.mock(Task.class);
         Mockito.when(this.taskRepository.findById(Mockito.any(Long.class)))
-                .thenReturn(Optional.of(Task.builder().id(1L).title("hello").password("1234").deletedAt(LocalDateTime.now()).build()));
+                .thenReturn(Optional.of(mockTask));
+        Mockito.when(mockTask.isDeleted()).thenReturn(true);
         try {
             // when
-            assertThrows(HttpStatusException.class, () -> this.taskService.deleteBy(1L, DeleteTaskRequestDto.builder().password("1234").build()));
-            this.taskService.deleteBy(1L, DeleteTaskRequestDto.builder().password("1234").build());
+            assertThrows(HttpStatusException.class, () -> this.taskService.deleteBy(1L, PasswordRequestDto.builder().password("1234").build()));
+            this.taskService.deleteBy(1L, PasswordRequestDto.builder().password("1234").build());
         } catch (HttpStatusException e) {
             // then
             assertThat(e.getErrorCode().getCode()).isEqualTo(HttpStatus.BAD_REQUEST);

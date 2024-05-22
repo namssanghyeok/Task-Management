@@ -44,8 +44,8 @@ class TaskRepositoryTest {
         Task deletedTask = Task.builder()
                 .title("task")
                 .password("password")
-                .deletedAt(LocalDateTime.now())
                 .build();
+        deletedTask.delete();
         this.taskRepository.save(task);
         this.taskRepository.save(deletedTask);
         List<Task> tasks = this.taskRepository.findAllByDeletedAtIsNull(null);
