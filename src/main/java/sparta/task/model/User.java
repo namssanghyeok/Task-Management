@@ -22,7 +22,9 @@ public class User extends TimeStamp {
     private Long id;
 
     private String nickname;
+
     private String username;
+
     private String password;
 
     @Enumerated(EnumType.ORDINAL)
