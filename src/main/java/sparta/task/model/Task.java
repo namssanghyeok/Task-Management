@@ -35,6 +35,10 @@ public class Task extends TimeStamp {
     @OneToMany(mappedBy = "taskId")
     private List<UploadFile> attachments;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
     // domain logic
     public void updateBy(UpdateTaskRequestDto updateTaskRequestDto) {
         if (updateTaskRequestDto.getTitle() != null && !updateTaskRequestDto.getTitle().isEmpty()) {
