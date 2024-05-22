@@ -1,0 +1,10 @@
+### signup
+
+POST localhost:8080/api/user
+Content-Type: application/json
+
+{
+  "username": "helloworld",
+  "nickname": "thisisnickname",
+  "password": "helloworld"
+}
