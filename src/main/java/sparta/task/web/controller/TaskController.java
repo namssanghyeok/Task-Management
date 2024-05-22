@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import sparta.task.dto.request.*;
 import sparta.task.dto.response.TaskResponseDto;
@@ -21,6 +22,7 @@ import sparta.task.exception.ErrorCode;
 import sparta.task.exception.exceptions.HttpStatusException;
 import sparta.task.model.Task;
 import sparta.task.model.UploadFile;
+import sparta.task.security.principal.UserPrincipal;
 import sparta.task.service.FileService;
 import sparta.task.service.TaskService;
 
@@ -41,8 +43,11 @@ public class TaskController {
             @ApiResponse(responseCode = "400", description = "validation 오류"),
     })
     @PostMapping
-    ResponseEntity<?> createTask(@Valid @RequestBody CreateTaskRequestDto createTaskRequestDto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(taskService.createTask(createTaskRequestDto));
+    ResponseEntity<?> createTask(@Valid @RequestBody CreateTaskRequestDto createTaskRequestDto,
+                                 @AuthenticationPrincipal UserPrincipal userPrincipal
+                                 ) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(taskService.createTask(createTaskRequestDto, userPrincipal.getUser()));
     }
 
     @Operation(summary = "task를 조회합니다.")

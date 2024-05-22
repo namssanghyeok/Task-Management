@@ -20,9 +20,10 @@ import sparta.task.mapper.TaskMapper;
 import sparta.task.mapper.UploadFileMapper;
 import sparta.task.model.Task;
 import sparta.task.model.UploadFile;
+import sparta.task.model.User;
 import sparta.task.repository.TaskRepository;
+import sparta.task.repository.UserRepository;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -32,6 +33,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
 class TaskServiceTest {
+    @Mock
+    private UserRepository userRepository;
     @Mock
     private TaskRepository taskRepository;
     @Mock
@@ -62,14 +65,19 @@ class TaskServiceTest {
     void createTask_success() {
         // given
         // 가상으로 repository 의 save가 실행되면 task가 return되게 한다.
-        Mockito.when(this.taskRepository.save(Mockito.any(Task.class))).thenReturn(task);
+        Mockito.when(this.taskRepository.save(Mockito.any(Task.class)))
+                .thenReturn(task);
         // 가상으로 toTaskDto 가 실행되면 TaskResponseDto가 반환되도록 한다.
-        Mockito.when(this.taskMapper.toTaskDto(Mockito.any(Task.class))).thenReturn(taskResponseDto);
+        Mockito.when(this.taskMapper.toTaskDto(Mockito.any(Task.class)))
+                .thenReturn(taskResponseDto);
+        Mockito.when(this.userRepository.findByUsername(Mockito.anyString()))
+                .thenReturn(Optional.of(Mockito.any(User.class)));
         // 가상으로 createTaskDtoToEntity 가 실행 되면 createTaskDto가 반환되도록한다.
-        Mockito.when(this.taskMapper.CreateTaskDtoToEntity(Mockito.any(CreateTaskRequestDto.class))).thenReturn(task);
+        Mockito.when(this.taskMapper.CreateTaskDtoToEntity(Mockito.any(CreateTaskRequestDto.class), Mockito.any(User.class)))
+                .thenReturn(task);
 
         // when
-        TaskResponseDto res = this.taskService.createTask(createTaskRequestDto);
+        TaskResponseDto res = this.taskService.createTask(createTaskRequestDto, userPrincipal.getUser());
 
         // then
         assertThat(res.getId()).isEqualTo(task.getId());

@@ -4,16 +4,21 @@ import org.springframework.stereotype.Component;
 import sparta.task.dto.request.CreateTaskRequestDto;
 import sparta.task.dto.response.TaskResponseDto;
 import sparta.task.model.Task;
+import sparta.task.model.User;
 
 import java.time.LocalDateTime;
 
 @Component
 public class TaskMapper {
-    public Task CreateTaskDtoToEntity(CreateTaskRequestDto createTaskRequestDto) {
+    public Task CreateTaskDtoToEntity(CreateTaskRequestDto createTaskRequestDto,
+                                      User currentUser,
+                                      User assignee
+                                      ) {
         return Task.builder()
                 .title(createTaskRequestDto.getTitle())
                 .content(createTaskRequestDto.getContent())
-                .assignee(createTaskRequestDto.getAssignee())
+                .author(currentUser)
+                .assignee(assignee)
                 .password(createTaskRequestDto.getPassword())
                 .build();
     }
@@ -23,7 +28,7 @@ public class TaskMapper {
                 .id(task.getId())
                 .title(task.getTitle())
                 .content(task.getContent())
-                .assignee(task.getAssignee())
+                .assignee(task.getAssignee().getUsername())
                 .createdAt(task.getCreatedAt())
                 .updatedAt(task.getUpdatedAt())
                 .build();

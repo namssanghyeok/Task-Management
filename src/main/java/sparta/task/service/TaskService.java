@@ -4,31 +4,36 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import sparta.task.dto.request.CreateTaskRequestDto;
-import sparta.task.dto.request.DeleteTaskRequestDto;
 import sparta.task.dto.request.PasswordRequestDto;
 import sparta.task.dto.request.UpdateTaskRequestDto;
 import sparta.task.dto.response.TaskResponseDto;
 import sparta.task.dto.response.UploadFileResponseDto;
 import sparta.task.exception.ErrorCode;
 import sparta.task.exception.exceptions.HttpStatusException;
+import sparta.task.exception.exceptions.UserNotFound;
 import sparta.task.mapper.TaskMapper;
 import sparta.task.mapper.UploadFileMapper;
 import sparta.task.model.Task;
+import sparta.task.model.User;
 import sparta.task.repository.TaskRepository;
+import sparta.task.repository.UserRepository;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class TaskService {
+    private final UserRepository userRepository;
     private final TaskRepository taskRepository;
 
     private final TaskMapper taskMapper;
     private final UploadFileMapper uploadFileMapper;
 
-    public TaskResponseDto createTask(CreateTaskRequestDto createTaskRequestDto) {
+    public TaskResponseDto createTask(CreateTaskRequestDto createTaskRequestDto, User currentuser) {
+        User assignee = this.userRepository.findByUsername(createTaskRequestDto.getAssignee())
+                .orElseThrow(UserNotFound::new);
         return this.taskMapper.toTaskDto(this.taskRepository.save(
-                this.taskMapper.CreateTaskDtoToEntity(createTaskRequestDto)
+                this.taskMapper.CreateTaskDtoToEntity(createTaskRequestDto,  currentuser, assignee)
         ));
     }
 

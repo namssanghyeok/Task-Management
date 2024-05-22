@@ -21,8 +21,8 @@ public class CreateTaskRequestDto {
     @Schema(description = "task 내용입니다.", example = "예약")
     private String content;
 
-    @Schema(description = "작업자 형식은 email입니다.", example = "hello@gmail.com")
-    @Email
+    @Schema(description = "작업자의 username 입니다", example = "username")
+    @Size(min = 4, max = 10)
     private String assignee;
 
     @NotBlank

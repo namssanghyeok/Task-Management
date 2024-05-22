@@ -28,16 +28,18 @@ public class Task extends TimeStamp {
 
     private String content;
 
-    private String assignee;
-
     private String password;
 
     @OneToMany(mappedBy = "taskId")
     private List<UploadFile> attachments;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "author_id")
+    private User author;
+
+    @ManyToOne
+    @JoinColumn(name = "assignee_id")
+    private User assignee;
 
     // domain logic
     public void updateBy(UpdateTaskRequestDto updateTaskRequestDto) {
@@ -48,7 +50,8 @@ public class Task extends TimeStamp {
             this.content = updateTaskRequestDto.getContent();
         }
         if (updateTaskRequestDto.getAssignee() != null && !updateTaskRequestDto.getAssignee().isEmpty()) {
-            this.assignee = updateTaskRequestDto.getAssignee();
+            // assignee 를 이용해 user 를 찾아와야함
+            // this.assignee = updateTaskRequestDto.getAssignee();
         }
     }
 
