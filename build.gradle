@@ -54,10 +54,10 @@ jacocoTestReport {
                             '**/dto/**',
                             '**/exception/**',
                             '**/mapper/**',
-                            //'**/web/**',
                             '**/model/**',
                             '**/TaskApplication.class', // TaskApplication 클래스 제외
-                            '**/FileController.class'
+                            '**/FileController.class',
+                            '**/controller/**'
                     ])
                 })
         )
@@ -77,10 +77,11 @@ jacocoTestCoverageVerification {
                     '*.dto.*',
                     '*.exception.*',
                     '*.mapper.*',
-                    //'*.web.*',
+                    '*.web.*',
                     '*.model.*',
                     '*.TaskApplication', // TaskApplication 클래스 제외
-                    '*.FileController'
+                    '*.FileController',
+                    '*.controller.*',
             ]
         }
     }
