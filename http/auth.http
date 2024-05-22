@@ -1,0 +1,22 @@
+### login
+POST localhost:8080/api/user/login
+Content-Type: application/json
+
+{
+  "username": "helloworld",
+  "password": "helloworld"
+}
+
+> {% client.global.set("access_token", response.body.accessToken); %}
+
+### create task using login info
+POST http://localhost:8080/api/task
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "title": "hello world",
+  "content": "hahahoho",
+  "assignee": "foo@gmail.com",
+  "password": "1234"
+}

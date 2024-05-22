@@ -5,7 +5,7 @@ Content-Type: application/json
 {
   "title": "hello world",
   "content": "hahahoho",
-  "assignee": "foo",
+  "assignee": "foo@gmail.com",
   "password": "1234"
 }
 
@@ -30,13 +30,13 @@ Content-Type: application/json
 }
 
 ### FIND BY ID
-GET localhost:8080/api/task/33
+GET localhost:8080/api/task/6
 
 ### SHOW ALL
 GET localhost:8080/api/task
 
 ### UPDATE
-PUT localhost:8080/api/task/33
+PUT localhost:8080/api/task/6
 Content-Type: application/json
 
 {
@@ -46,10 +46,5 @@ Content-Type: application/json
 }
 
 ### DELETE
-DELETE localhost:8080/api/task/32
-Content-Type: application/json
-
-{
-  "password": "1234"
-}
+DELETE localhost:8080/api/task/6?password=1234
 
