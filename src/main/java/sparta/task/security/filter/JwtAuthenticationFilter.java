@@ -7,6 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -14,13 +15,14 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import sparta.task.dto.TokenDto;
 import sparta.task.dto.request.LoginRequestDto;
+import sparta.task.exception.CustomErrorResponse;
 import sparta.task.jwt.JwtUtil;
 import sparta.task.model.UserRoleEnum;
 import sparta.task.security.principal.UserPrincipal;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 
-// filter 가 아니라
 @Slf4j(topic = "로그인 및 JWT 생성")
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final JwtUtil jwtUtil;
@@ -69,8 +71,18 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     }
 
     @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
-        // TODO: custom Error response
-         response.setStatus(401);
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json");
+        response.getWriter().write(
+                CustomErrorResponse.builder()
+                        .timestamp(LocalDateTime.now())
+                        .path(request.getRequestURI())
+                        .status(HttpStatus.UNAUTHORIZED.value())
+                        .error(HttpStatus.UNAUTHORIZED.getReasonPhrase())
+                        .message("username 또는 password 가 잘못되었습니다.")
+                        .build().toString()
+        );
+
     }
 }

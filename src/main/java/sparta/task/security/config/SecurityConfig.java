@@ -12,11 +12,9 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import sparta.task.jwt.JwtUtil;
-import sparta.task.security.exception.AuthenticationEntryPointImpl;
 import sparta.task.security.filter.JwtAuthenticationFilter;
 import sparta.task.security.filter.JwtAuthorizationFilter;
 import sparta.task.security.service.UserDetailsServiceImpl;
@@ -53,11 +51,6 @@ public class SecurityConfig {
     @Bean
     public JwtAuthorizationFilter jwtAuthorizationFilter() {
         return new JwtAuthorizationFilter(jwtUtil, userDetailsService);
-    }
-
-    @Bean
-    AuthenticationEntryPoint authenticationEntryPoint() {
-        return new AuthenticationEntryPointImpl();
     }
 
 
