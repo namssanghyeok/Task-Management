@@ -4,31 +4,38 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import sparta.task.dto.request.CreateCommentRequestDto;
 import sparta.task.dto.request.CreateTaskRequestDto;
 import sparta.task.dto.request.UpdateTaskRequestDto;
+import sparta.task.dto.response.CommentResponseDto;
 import sparta.task.dto.response.TaskResponseDto;
 import sparta.task.dto.response.UploadFileResponseDto;
 import sparta.task.exception.ErrorCode;
 import sparta.task.exception.exceptions.ForbiddenException;
 import sparta.task.exception.exceptions.HttpStatusException;
 import sparta.task.exception.exceptions.UserNotFound;
+import sparta.task.mapper.CommentMapper;
 import sparta.task.mapper.TaskMapper;
 import sparta.task.mapper.UploadFileMapper;
 import sparta.task.model.Task;
 import sparta.task.model.User;
+import sparta.task.repository.CommentRepository;
 import sparta.task.repository.TaskRepository;
 import sparta.task.repository.UserRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class TaskService {
     private final UserRepository userRepository;
     private final TaskRepository taskRepository;
+    private final CommentRepository commentRepository;
 
     private final TaskMapper taskMapper;
     private final UploadFileMapper uploadFileMapper;
+    private final CommentMapper commentMapper;
 
     public TaskResponseDto createTask(CreateTaskRequestDto createTaskRequestDto, User currentuser) {
         User assignee = this.userRepository.findByUsername(createTaskRequestDto.getAssignee())
@@ -100,6 +107,11 @@ public class TaskService {
             throw new ForbiddenException();
         }
         return task;
+    }
+
+    public CommentResponseDto createComment(Long taskId, CreateCommentRequestDto requestDto, User currentUser) {
+        Task task = this.findById(taskId);
+        return this.commentMapper.toCommentResponseDto(this.commentRepository.save(this.commentMapper.createDtoToEntity(requestDto, currentUser, task)));
     }
 
     private Task findByIdOrThrow(Long id) {

@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.expression.SecurityExpressionHandler;
 import org.springframework.web.bind.annotation.*;
+import sparta.task.dto.request.CreateCommentRequestDto;
 import sparta.task.dto.request.CreateTaskRequestDto;
 import sparta.task.dto.request.UpdateTaskRequestDto;
 import sparta.task.dto.request.UploadFileRequestDto;
@@ -172,5 +173,14 @@ public class TaskController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=files.zip")
                 .body(this.fileService.getByteArrayResource(attachments));
+    }
+
+    /* comment */
+    @PostMapping("/{taskId}/comment")
+    public ResponseEntity<?> newComment(@PathVariable Long taskId,
+                                        @Valid @RequestBody CreateCommentRequestDto requestDto,
+                                        @LoginUser User currentUser
+    ) {
+        return ResponseEntity.ok(this.taskService.createComment(taskId, requestDto, currentUser)) ;
     }
 }

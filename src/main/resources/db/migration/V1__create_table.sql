@@ -25,3 +25,19 @@ create table task
     updated_at TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP // null 이 아니면 삭제됨
 );
+
+create table comment
+(
+    comment_id bigint primary key auto_increment,
+    content varchar,
+
+    task_id bigint,
+    author_id bigint,
+
+    constraint fk_comment_author_id foreign key (author_id) references member(user_id),
+    constraint fk_comment_task_id foreign key(task_id) references task(task_id),
+
+    created_at timestamp default current_timestamp,
+    updated_at timestamp on update current_timestamp,
+    deleted_at timestamp
+)
