@@ -24,24 +24,21 @@ import sparta.task.repository.TaskRepository;
 import sparta.task.repository.UserRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class TaskService {
     private final UserRepository userRepository;
     private final TaskRepository taskRepository;
-    private final CommentRepository commentRepository;
 
     private final TaskMapper taskMapper;
     private final UploadFileMapper uploadFileMapper;
-    private final CommentMapper commentMapper;
 
     public TaskResponseDto createTask(CreateTaskRequestDto createTaskRequestDto, User currentuser) {
         User assignee = this.userRepository.findByUsername(createTaskRequestDto.getAssignee())
                 .orElseThrow(UserNotFound::new);
         return this.taskMapper.toTaskDto(this.taskRepository.save(
-                this.taskMapper.CreateTaskDtoToEntity(createTaskRequestDto,  currentuser, assignee)
+                this.taskMapper.CreateTaskDtoToEntity(createTaskRequestDto, currentuser, assignee)
         ));
     }
 
@@ -107,11 +104,6 @@ public class TaskService {
             throw new ForbiddenException();
         }
         return task;
-    }
-
-    public CommentResponseDto createComment(Long taskId, CreateCommentRequestDto requestDto, User currentUser) {
-        Task task = this.findById(taskId);
-        return this.commentMapper.toCommentResponseDto(this.commentRepository.save(this.commentMapper.createDtoToEntity(requestDto, currentUser, task)));
     }
 
     private Task findByIdOrThrow(Long id) {

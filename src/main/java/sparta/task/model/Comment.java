@@ -28,4 +28,14 @@ public class Comment extends TimeStamp {
     @ManyToOne
     @JoinColumn(name = "task_id")
     private Task task;
+
+    @Transient
+    public boolean canUpdateBy(User currentUser) {
+        return author.isAdmin() || author.getId().equals(currentUser.getId());
+    }
+
+    @Transient
+    public void update(Comment comment) {
+        this.content = comment.getContent();
+    }
 }

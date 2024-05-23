@@ -23,7 +23,12 @@ public class TimeStamp {
 
     private LocalDateTime deletedAt;
 
-    protected void delete() {
+    public void delete() {
         this.deletedAt = LocalDateTime.now();
+    }
+
+    // domain logic
+    public boolean isDeleted() {
+        return deletedAt != null;
     }
 }

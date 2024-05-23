@@ -8,6 +8,7 @@ import lombok.Setter;
 @Setter
 @Builder
 public class CommentResponseDto {
+    private long commentId;
     private String content;
     private long taskId;
     private long userId;

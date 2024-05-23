@@ -15,10 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.expression.SecurityExpressionHandler;
 import org.springframework.web.bind.annotation.*;
-import sparta.task.dto.request.CreateCommentRequestDto;
-import sparta.task.dto.request.CreateTaskRequestDto;
-import sparta.task.dto.request.UpdateTaskRequestDto;
-import sparta.task.dto.request.UploadFileRequestDto;
+import sparta.task.dto.request.*;
 import sparta.task.dto.response.TaskResponseDto;
 import sparta.task.exception.CustomErrorResponse;
 import sparta.task.exception.ErrorCode;
@@ -26,6 +23,7 @@ import sparta.task.exception.exceptions.HttpStatusException;
 import sparta.task.model.Task;
 import sparta.task.model.UploadFile;
 import sparta.task.model.User;
+import sparta.task.service.CommentService;
 import sparta.task.service.FileService;
 import sparta.task.service.TaskService;
 import sparta.task.web.argumentResolver.annotation.LoginUser;
@@ -40,6 +38,8 @@ import java.util.List;
 public class TaskController {
     private final TaskService taskService;
     private final FileService fileService;
+    private final CommentService commentService;
+
     private final SecurityExpressionHandler webSecurityExpressionHandler;
 
     // NOTE: @AuthenticationPrincipal 을 사용하면 로그인 하지 않은 경우 403 에러 발생
@@ -181,6 +181,25 @@ public class TaskController {
                                         @Valid @RequestBody CreateCommentRequestDto requestDto,
                                         @LoginUser User currentUser
     ) {
-        return ResponseEntity.ok(this.taskService.createComment(taskId, requestDto, currentUser)) ;
+        Task task = this.taskService.findById(taskId);
+        return ResponseEntity.ok(this.commentService.addCommentToTask(requestDto, task, currentUser));
+    }
+
+    @DeleteMapping("/{taskId}/comment/{commentId}")
+    public ResponseEntity<?> deleteComment(@PathVariable Long taskId,
+                                           @PathVariable Long commentId,
+                                           @LoginUser User currentUser
+    ) {
+        this.commentService.deleteComment(commentId, taskId, currentUser);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @PutMapping("/{taskId}/comment/{commentId}")
+    public ResponseEntity<?> updateComment(@PathVariable Long taskId,
+                                           @PathVariable Long commentId,
+                                           @RequestBody UpdateCommentDto requestDto,
+                                           @LoginUser User currentUser
+    ) {
+        return ResponseEntity.ok(this.commentService.update(commentId, requestDto, taskId, currentUser));
     }
 }
