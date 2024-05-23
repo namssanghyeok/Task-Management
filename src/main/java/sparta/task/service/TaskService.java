@@ -49,16 +49,6 @@ public class TaskService {
         return this.findByIdOrThrow(taskId);
     }
 
-
-    public Task findByIdAndCheckPassword(long taskId, String password) {
-        Task task = this.findByIdOrThrow(taskId);
-        if (task.checkPassword(password)) {
-            throw new HttpStatusException(ErrorCode.INVALID_PASSWORD);
-        }
-        return task;
-    }
-
-
     public List<TaskResponseDto> showAll() {
         return this.taskRepository.findAllByDeletedAtIsNull(Sort.by(Sort.Direction.DESC, "createdAt"))
                 .stream()
@@ -66,13 +56,9 @@ public class TaskService {
                 .toList();
     }
 
-    public TaskResponseDto updateTaskBy(Long id, UpdateTaskRequestDto updateTaskRequestDto) {
+    public TaskResponseDto updateTaskBy(Long id, UpdateTaskRequestDto updateTaskRequestDto, User currentUser) {
         // 1. find
         Task task = this.findByIdOrThrow(id);
-        // 2. check password. if not, throw 401
-        if (task.checkPassword(updateTaskRequestDto.getPassword())) {
-            throw new HttpStatusException(ErrorCode.INVALID_PASSWORD);
-        }
         // 3. update & save
         task.updateBy(updateTaskRequestDto);
         return this.taskMapper.toTaskDto(this.taskRepository.save(task));
@@ -87,9 +73,6 @@ public class TaskService {
 
     public void deleteBy(Long id, PasswordRequestDto deleteTaskRequestDto) {
         Task task = this.findByIdOrThrow(id);
-        if (task.checkPassword(deleteTaskRequestDto.getPassword())) {
-            throw new HttpStatusException(ErrorCode.INVALID_PASSWORD);
-        }
         if (task.isDeleted()) {
             throw new HttpStatusException(ErrorCode.ALREADY_DELETED);
         }

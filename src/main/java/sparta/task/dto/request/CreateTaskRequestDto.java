@@ -24,9 +24,4 @@ public class CreateTaskRequestDto {
     @Schema(description = "작업자의 username 입니다", example = "username")
     @Size(min = 4, max = 10)
     private String assignee;
-
-    @NotBlank
-    @Size(min = 4, max = 30)
-    @Schema(example = "password")
-    private String password;
 }

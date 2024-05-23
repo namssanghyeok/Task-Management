@@ -27,8 +27,9 @@ public class FileController {
                                         @Valid @ModelAttribute PasswordRequestDto passwordRequestDto
     ) {
         UploadFile uploadFile = this.fileService.getByFilename(filename);
-        Long taskId = uploadFile.getTaskId();
-        this.taskService.findByIdAndCheckPassword(taskId, passwordRequestDto.getPassword());
+        // Long taskId = uploadFile.getTaskId();
+        // this.taskService.findByIdAndCheckPassword(taskId, passwordRequestDto.getPassword());
+        // TODO: 본인 검사해야함
         this.fileService.deleteById(uploadFile.getId());
 
         return ResponseEntity

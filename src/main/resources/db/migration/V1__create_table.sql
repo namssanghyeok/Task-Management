@@ -16,7 +16,6 @@ create table task
     title     VARCHAR(200) not null,
     content   TEXT,
     assignee  VARCHAR(30),
-    password  VARCHAR(30) not null,
     assignee_id BIGINT not null,
     author_id BIGINT,
     CONSTRAINT fk_task_author_id FOREIGN KEY (author_id) REFERENCES member (user_id),

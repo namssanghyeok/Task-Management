@@ -28,8 +28,6 @@ public class Task extends TimeStamp {
 
     private String content;
 
-    private String password;
-
     @OneToMany(mappedBy = "taskId")
     private List<UploadFile> attachments;
 
@@ -57,11 +55,6 @@ public class Task extends TimeStamp {
 
     public void delete() {
         super.delete();
-    }
-
-    @Transient
-    public boolean checkPassword(String password) {
-        return !this.password.equals(password);
     }
 
     @Transient

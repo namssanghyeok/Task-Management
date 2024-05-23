@@ -1,7 +1,6 @@
 package sparta.task.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
@@ -18,7 +17,6 @@ public class UpdateTaskRequestDto {
 
     private String content;
 
-    @Email
     private String assignee;
 
     @NotBlank

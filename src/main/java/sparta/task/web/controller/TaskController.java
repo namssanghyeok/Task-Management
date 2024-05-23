@@ -13,18 +13,22 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.access.expression.SecurityExpressionHandler;
 import org.springframework.web.bind.annotation.*;
-import sparta.task.dto.request.*;
+import sparta.task.dto.request.CreateTaskRequestDto;
+import sparta.task.dto.request.PasswordRequestDto;
+import sparta.task.dto.request.UpdateTaskRequestDto;
+import sparta.task.dto.request.UploadFileRequestDto;
 import sparta.task.dto.response.TaskResponseDto;
 import sparta.task.exception.CustomErrorResponse;
 import sparta.task.exception.ErrorCode;
 import sparta.task.exception.exceptions.HttpStatusException;
 import sparta.task.model.Task;
 import sparta.task.model.UploadFile;
-import sparta.task.security.principal.UserPrincipal;
+import sparta.task.model.User;
 import sparta.task.service.FileService;
 import sparta.task.service.TaskService;
+import sparta.task.web.argumentResolver.annotation.LoginUser;
 
 import java.util.List;
 
@@ -36,6 +40,35 @@ import java.util.List;
 public class TaskController {
     private final TaskService taskService;
     private final FileService fileService;
+    private final SecurityExpressionHandler webSecurityExpressionHandler;
+
+    // NOTE: @AuthenticationPrincipal 을 사용하면 로그인 하지 않은 경우 403 에러 발생
+    @GetMapping("/test")
+    ResponseEntity<?> temp(@LoginUser User currentUser) {
+        System.out.println(currentUser);
+        if (currentUser != null) {
+            System.out.println(currentUser.getUsername());
+        }
+        return ResponseEntity.ok("hello world");
+    }
+
+    @GetMapping("/user")
+    ResponseEntity<?> user(@LoginUser User currentUser) {
+        System.out.println(currentUser);
+        if (currentUser != null) {
+            System.out.println(currentUser.getUsername());
+        }
+        return ResponseEntity.ok("user");
+    }
+
+    @GetMapping("/admin")
+    ResponseEntity<?> admin(@LoginUser User currentUser) {
+        System.out.println(currentUser);
+        if (currentUser != null) {
+            System.out.println(currentUser.getUsername());
+        }
+        return ResponseEntity.ok("admin");
+    }
 
     @Operation(summary = "task를 생성합니다.")
     @ApiResponses({
@@ -44,10 +77,10 @@ public class TaskController {
     })
     @PostMapping
     ResponseEntity<?> createTask(@Valid @RequestBody CreateTaskRequestDto createTaskRequestDto,
-                                 @AuthenticationPrincipal UserPrincipal userPrincipal
-                                 ) {
+                                 @LoginUser User currentUser
+    ) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(taskService.createTask(createTaskRequestDto, userPrincipal.getUser()));
+                .body(taskService.createTask(createTaskRequestDto, currentUser));
     }
 
     @Operation(summary = "task를 조회합니다.")
@@ -78,8 +111,10 @@ public class TaskController {
     @PutMapping("/{id}")
     ResponseEntity<?> updateTask(
             @PathVariable Long id,
-            @Valid @RequestBody UpdateTaskRequestDto updateTaskRequestDto) {
-        return ResponseEntity.ok(this.taskService.updateTaskBy(id, updateTaskRequestDto));
+            @Valid @RequestBody UpdateTaskRequestDto updateTaskRequestDto,
+            @LoginUser User currentUser
+    ) {
+        return ResponseEntity.ok(this.taskService.updateTaskBy(id, updateTaskRequestDto, currentUser));
     }
 
     @Operation(summary = "task를 삭제합니다.")
@@ -108,9 +143,8 @@ public class TaskController {
     public ResponseEntity<?> uploadFile(@PathVariable Long id,
                                         @Valid @ModelAttribute UploadFileRequestDto uploadFileRequestDto
     ) {
-        Task task = this.taskService.findByIdAndCheckPassword(id, uploadFileRequestDto.getPassword());
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(this.fileService.fileUploadTo(task.getId(), uploadFileRequestDto.getFile()));
+                .body(this.fileService.fileUploadTo(this.taskService.findById(id).getId(), uploadFileRequestDto.getFile()));
     }
 
     @Operation(summary = "task에 업로드 된 파일을 조회합니다.")
