@@ -2,35 +2,30 @@ package sparta.task.web.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import sparta.task.dto.request.PasswordRequestDto;
 import sparta.task.model.UploadFile;
+import sparta.task.model.User;
 import sparta.task.service.FileService;
 import sparta.task.service.TaskService;
+import sparta.task.web.argumentResolver.annotation.LoginUser;
 
 @Tag(name = "파일 다운로드 / 삭제 / 일반 요청")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/file")
 public class FileController {
-    private final TaskService taskService;
     private final FileService fileService;
 
-    @DeleteMapping("/{filename}")
-    public ResponseEntity<?> deleteFile(@PathVariable String filename,
-                                        @Valid @ModelAttribute PasswordRequestDto passwordRequestDto
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteFile(@PathVariable long id,
+                                        @LoginUser User currentUser
     ) {
-        UploadFile uploadFile = this.fileService.getByFilename(filename);
-        // Long taskId = uploadFile.getTaskId();
-        // this.taskService.findByIdAndCheckPassword(taskId, passwordRequestDto.getPassword());
-        // TODO: 본인 검사해야함
-        this.fileService.deleteById(uploadFile.getId());
+        this.fileService.deleteById(id, currentUser);
 
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)

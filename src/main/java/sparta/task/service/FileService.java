@@ -9,9 +9,13 @@ import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
 import sparta.task.dto.response.UploadFileResponseDto;
 import sparta.task.exception.ErrorCode;
+import sparta.task.exception.exceptions.ForbiddenException;
 import sparta.task.exception.exceptions.HttpStatusException;
 import sparta.task.mapper.UploadFileMapper;
+import sparta.task.model.Task;
 import sparta.task.model.UploadFile;
+import sparta.task.model.User;
+import sparta.task.repository.TaskRepository;
 import sparta.task.repository.UploadFileRepository;
 import sparta.task.store.FileStore;
 
@@ -25,11 +29,12 @@ import java.util.zip.ZipOutputStream;
 @Service
 @RequiredArgsConstructor
 public class FileService {
+    private final TaskRepository taskRepository;
     private final UploadFileRepository uploadFileRepository;
     private final UploadFileMapper uploadFileMapper;
     private final FileStore fileStore;
 
-    public UploadFileResponseDto fileUploadTo(Long taskId, MultipartFile file) {
+    public UploadFileResponseDto fileUploadTo(long taskId, MultipartFile file) {
         if (file == null || file.isEmpty()) {
             return null;
         }
@@ -80,7 +85,13 @@ public class FileService {
 
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(Long id, User currentUser) {
+        UploadFile uploadFile = this.uploadFileRepository.findById(id).orElseThrow(() -> new HttpStatusException(ErrorCode.FILE_NOT_FOUND));
+        Task task = this.taskRepository.findById(uploadFile.getTaskId()).orElseThrow(() -> new HttpStatusException(ErrorCode.FILE_NOT_FOUND));
+        if(task.canUpdateBy(currentUser)) {
+            throw new ForbiddenException();
+        }
+
         this.uploadFileRepository.deleteById(id);
     }
 }

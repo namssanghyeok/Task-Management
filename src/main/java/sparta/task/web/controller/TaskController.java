@@ -16,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.expression.SecurityExpressionHandler;
 import org.springframework.web.bind.annotation.*;
 import sparta.task.dto.request.CreateTaskRequestDto;
-import sparta.task.dto.request.PasswordRequestDto;
 import sparta.task.dto.request.UpdateTaskRequestDto;
 import sparta.task.dto.request.UploadFileRequestDto;
 import sparta.task.dto.response.TaskResponseDto;
@@ -125,10 +124,8 @@ public class TaskController {
             @ApiResponse(responseCode = "404", description = "not found", content = @Content(schema = @Schema(implementation = CustomErrorResponse.class), mediaType = "application/json"))
     })
     @DeleteMapping("/{id}")
-    ResponseEntity<?> deleteTask(@PathVariable Long id,
-                                 @Valid @ModelAttribute PasswordRequestDto passwordRequestDto
-    ) {
-        this.taskService.deleteBy(id, passwordRequestDto);
+    ResponseEntity<?> deleteTask(@PathVariable Long id, @LoginUser User currentUser) {
+        this.taskService.deleteBy(id, currentUser);
         return ResponseEntity.noContent().build();
     }
 
@@ -141,10 +138,12 @@ public class TaskController {
     })
     @PostMapping("/{id}/attachment/upload")
     public ResponseEntity<?> uploadFile(@PathVariable Long id,
-                                        @Valid @ModelAttribute UploadFileRequestDto uploadFileRequestDto
+                                        @Valid @ModelAttribute UploadFileRequestDto uploadFileRequestDto,
+                                        @LoginUser User currentUser
     ) {
+        this.taskService.findByIdAndCheckCanUpdate(id, currentUser);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(this.fileService.fileUploadTo(this.taskService.findById(id).getId(), uploadFileRequestDto.getFile()));
+                .body(this.fileService.fileUploadTo(id, uploadFileRequestDto.getFile()));
     }
 
     @Operation(summary = "task에 업로드 된 파일을 조회합니다.")

@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import sparta.task.dto.request.CreateTaskRequestDto;
-import sparta.task.dto.request.PasswordRequestDto;
 import sparta.task.dto.request.UpdateTaskRequestDto;
 import sparta.task.dto.response.TaskResponseDto;
 import sparta.task.dto.response.UploadFileResponseDto;
@@ -83,13 +82,24 @@ public class TaskService {
                 .toList();
     }
 
-    public void deleteBy(Long id, PasswordRequestDto deleteTaskRequestDto) {
+    public void deleteBy(Long id, User currentUser) {
         Task task = this.findByIdOrThrow(id);
+        if (task.canUpdateBy(currentUser)) {
+            throw new ForbiddenException();
+        }
         if (task.isDeleted()) {
             throw new HttpStatusException(ErrorCode.ALREADY_DELETED);
         }
         task.delete();
         this.taskRepository.save(task);
+    }
+
+    public Task findByIdAndCheckCanUpdate(long id, User currentUser) {
+        Task task = this.findByIdOrThrow(id);
+        if (!task.canUpdateBy(currentUser)) {
+            throw new ForbiddenException();
+        }
+        return task;
     }
 
     private Task findByIdOrThrow(Long id) {
