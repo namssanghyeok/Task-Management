@@ -6,6 +6,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,7 +19,6 @@ import sparta.task.jwt.JwtUtil;
 import sparta.task.model.User;
 import sparta.task.model.UserRoleEnum;
 import sparta.task.security.principal.UserPrincipal;
-import sparta.task.security.service.UserDetailsServiceImpl;
 
 import java.io.IOException;
 
@@ -29,18 +29,19 @@ import java.io.IOException;
  * 403 에러가 날라가긴 하는데... 난 내 커스텀 에러메시지를 날려주고 싶어.
  */
 @Slf4j(topic = "JWT 검증 및 인가")
+@RequiredArgsConstructor
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-
-    public JwtAuthorizationFilter(JwtUtil jwtUtil) {
-        this.jwtUtil = jwtUtil;
-    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain) throws ServletException, IOException {
 
         String tokenValue = jwtUtil.getJwtFromHeader(req);
+        if (tokenValue == null) {
+            filterChain.doFilter(req, res);
+            return;
+        }
 
         // TODO: token이 만료되었다면, refresh-token 을 이용해 access token을 재발급
         // TODO: 제대로 된 토큰이고, refresh token 이 있다면 기간을 오늘로부터 1달 늘리기

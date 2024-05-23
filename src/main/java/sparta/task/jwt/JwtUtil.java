@@ -57,11 +57,12 @@ public class JwtUtil {
                 .compact();
     }
 
-    public String createRefreshToken(String username) {
+    public String createRefreshToken(User user) {
         Date date = new Date();
 
         return Jwts.builder()
-                .setSubject(username) // 사용자 식별자값(ID)
+                .setSubject(user.getUsername()) // 사용자 식별자값(ID)
+                .claim(CLAIM_ID, user.getId())
                 .setExpiration(new Date(date.getTime() + REFRESH_EXPIRATION_TIME)) // 만료 시간
                 .setIssuedAt(date) // 발급일
                 .compact();

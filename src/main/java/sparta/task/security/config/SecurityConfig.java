@@ -13,13 +13,13 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import sparta.task.jwt.JwtUtil;
 import sparta.task.model.UserRoleEnum;
 import sparta.task.security.exception.AccessDeniedHandlerImpl;
 import sparta.task.security.filter.JwtAuthenticationFilter;
 import sparta.task.security.filter.JwtAuthorizationFilter;
-import sparta.task.security.service.UserDetailsServiceImpl;
 
 @Configuration
 @RequiredArgsConstructor
@@ -53,6 +53,11 @@ public class SecurityConfig {
         return new JwtAuthorizationFilter(jwtUtil);
     }
 
+    @Bean
+    AccessDeniedHandler accessDeniedHandler() {
+        return new AccessDeniedHandlerImpl();
+    }
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -64,23 +69,22 @@ public class SecurityConfig {
         http.sessionManagement((httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)));
 
-        http.exceptionHandling(e -> e.accessDeniedHandler(new AccessDeniedHandlerImpl()));
+        http.exceptionHandling(e -> e.accessDeniedHandler(accessDeniedHandler()));
 
         http.headers(headers -> headers.frameOptions().disable());
 
         http.authorizeHttpRequests(requests ->
-                        requests.requestMatchers(HttpMethod.POST, "/api/user", "/api/user/").anonymous()
-                                .requestMatchers(HttpMethod.POST, "/api/user/login", "/api/user/login/").anonymous()
-                                .requestMatchers("/api/task/test", "/api/task/test/").permitAll()
-                                .requestMatchers("/api/task/admin").hasAuthority(UserRoleEnum.ADMIN.getAuthority())
-                                .requestMatchers("/api/task/user").hasAuthority(UserRoleEnum.USER.getAuthority())
-                                .requestMatchers(PathRequest.toH2Console()).permitAll()
-                                .anyRequest().authenticated()
+                requests.requestMatchers(HttpMethod.POST, "/api/user", "/api/user/").anonymous()
+                        .requestMatchers(HttpMethod.POST, "/api/user/login", "/api/user/login/").anonymous()
+                        .requestMatchers("/api/task/test", "/api/task/test/").permitAll()
+                        .requestMatchers("/api/task/admin").hasAuthority(UserRoleEnum.ADMIN.getAuthority())
+                        .requestMatchers("/api/task/user").hasAuthority(UserRoleEnum.USER.getAuthority())
+                        .requestMatchers(PathRequest.toH2Console()).permitAll()
+                        .anyRequest().authenticated()
         );
 
         http.addFilterBefore(jwtAuthorizationFilter(), JwtAuthenticationFilter.class);
-        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-//        http.addFilterAt(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterAt(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
