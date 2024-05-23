@@ -2,6 +2,7 @@ package sparta.task.mapper;
 
 import org.springframework.stereotype.Component;
 import sparta.task.dto.request.CreateTaskRequestDto;
+import sparta.task.dto.request.UpdateTaskRequestDto;
 import sparta.task.dto.response.TaskResponseDto;
 import sparta.task.model.Task;
 import sparta.task.model.User;
@@ -18,6 +19,15 @@ public class TaskMapper {
                 .title(createTaskRequestDto.getTitle())
                 .content(createTaskRequestDto.getContent())
                 .author(currentUser)
+                .assignee(assignee)
+                .build();
+    }
+
+    public Task updateTaskDtoToEntity(UpdateTaskRequestDto updateTaskRequestDto,
+                                      User assignee) {
+        return Task.builder()
+                .title(updateTaskRequestDto.getTitle())
+                .content(updateTaskRequestDto.getContent())
                 .assignee(assignee)
                 .build();
     }

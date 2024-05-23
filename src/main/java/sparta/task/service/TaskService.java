@@ -1,5 +1,6 @@
 package sparta.task.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -9,6 +10,7 @@ import sparta.task.dto.request.UpdateTaskRequestDto;
 import sparta.task.dto.response.TaskResponseDto;
 import sparta.task.dto.response.UploadFileResponseDto;
 import sparta.task.exception.ErrorCode;
+import sparta.task.exception.exceptions.ForbiddenException;
 import sparta.task.exception.exceptions.HttpStatusException;
 import sparta.task.exception.exceptions.UserNotFound;
 import sparta.task.mapper.TaskMapper;
@@ -56,12 +58,22 @@ public class TaskService {
                 .toList();
     }
 
+    @Transactional
     public TaskResponseDto updateTaskBy(Long id, UpdateTaskRequestDto updateTaskRequestDto, User currentUser) {
         // 1. find
         Task task = this.findByIdOrThrow(id);
+        // 2. 수정할 수 있는 사람인지?
+        if (!task.canUpdateBy(currentUser)) {
+            throw new ForbiddenException();
+        }
+        User newAssignee = null;
+        if (updateTaskRequestDto.getAssignee() != null) {
+            newAssignee = this.userRepository.findByUsername(updateTaskRequestDto.getAssignee())
+                    .orElseThrow(UserNotFound::new);
+        }
         // 3. update & save
-        task.updateBy(updateTaskRequestDto);
-        return this.taskMapper.toTaskDto(this.taskRepository.save(task));
+        task.update(this.taskMapper.updateTaskDtoToEntity(updateTaskRequestDto, newAssignee));
+        return this.taskMapper.toTaskDto(task);
     }
 
     public List<UploadFileResponseDto> findUploadFilesByTaskId(long id) {

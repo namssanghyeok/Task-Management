@@ -18,8 +18,4 @@ public class UpdateTaskRequestDto {
     private String content;
 
     private String assignee;
-
-    @NotBlank
-    @Size(min = 4, max = 30)
-    private String password;
 }

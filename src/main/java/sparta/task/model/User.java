@@ -29,4 +29,9 @@ public class User extends TimeStamp {
 
     @Enumerated(EnumType.ORDINAL)
     private UserRoleEnum role;
+
+    @Transient
+    public boolean isAdmin() {
+        return this.role.equals(UserRoleEnum.ADMIN);
+    }
 }

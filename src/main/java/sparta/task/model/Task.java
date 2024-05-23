@@ -40,22 +40,28 @@ public class Task extends TimeStamp {
     private User assignee;
 
     // domain logic
-    public void updateBy(UpdateTaskRequestDto updateTaskRequestDto) {
-        if (updateTaskRequestDto.getTitle() != null && !updateTaskRequestDto.getTitle().isEmpty()) {
-            this.title = updateTaskRequestDto.getTitle();
+    public void update(Task task) {
+        if (task.getTitle() != null && !task.getTitle().isEmpty()) {
+            this.title = task.getTitle();
         }
-        if (updateTaskRequestDto.getContent() != null && !updateTaskRequestDto.getContent().isEmpty()) {
-            this.content = updateTaskRequestDto.getContent();
+        if (task.getContent() != null && !task.getContent().isEmpty()) {
+            this.content = task.getContent();
         }
-        if (updateTaskRequestDto.getAssignee() != null && !updateTaskRequestDto.getAssignee().isEmpty()) {
-            // assignee 를 이용해 user 를 찾아와야함
-            // this.assignee = updateTaskRequestDto.getAssignee();
+        if (task.getAssignee() != null) {
+            this.assignee = task.getAssignee();
         }
     }
 
+    @Transient
+    public boolean canUpdateBy(User user) {
+        return user.getId().equals(getAuthor().getId()) || user.getId().equals(getAssignee().getId()) || user.isAdmin();
+    }
+
+    @Transient
     public void delete() {
         super.delete();
     }
+
 
     @Transient
     public boolean isDeleted() {
