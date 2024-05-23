@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 
 
-// NOTE: Authorization header가 없으면 이게 아예 실행되지 않음.
+// NOTE: Authorization header 가 없으면 이게 아예 실행되지 않음.
 public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {

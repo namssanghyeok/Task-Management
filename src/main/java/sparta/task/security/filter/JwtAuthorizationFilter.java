@@ -32,24 +32,20 @@ import java.io.IOException;
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-    private final UserDetailsServiceImpl userDetailsService;
 
-    public JwtAuthorizationFilter(JwtUtil jwtUtil, UserDetailsServiceImpl userDetailsService) {
+    public JwtAuthorizationFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
-        this.userDetailsService = userDetailsService;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain) throws ServletException, IOException {
 
-        // NOTE: 만료되었거나, authorization header가 없는 경우 403 에러가 발생하지 않고,..
         String tokenValue = jwtUtil.getJwtFromHeader(req);
 
+        // TODO: token이 만료되었다면, refresh-token 을 이용해 access token을 재발급
+        // TODO: 제대로 된 토큰이고, refresh token 이 있다면 기간을 오늘로부터 1달 늘리기
         if (StringUtils.hasText(tokenValue) && jwtUtil.validateToken(tokenValue)) {
-            // TODO: token이 만료되었다면, refresh-token을 확인하면됨
-
             Claims claims = jwtUtil.getUserInfoFromToken(tokenValue);
-
             try {
                 setAuthentication(claims);
             } catch (Exception e) {
