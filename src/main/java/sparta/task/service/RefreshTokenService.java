@@ -2,6 +2,9 @@ package sparta.task.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import sparta.task.dto.TokenDto;
 import sparta.task.dto.request.ReIssueAccessTokenRequestDto;
@@ -15,6 +18,7 @@ import sparta.task.repository.RefreshTokenRepository;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class RefreshTokenService {
@@ -57,4 +61,18 @@ public class RefreshTokenService {
                 .build();
     }
 
+    public void deleteExpiredTokens() {
+        int BATCH_SIZE = 100;
+        LocalDateTime now = LocalDateTime.now();
+        PageRequest pageRequest = PageRequest.of(0, BATCH_SIZE);
+        Page<RefreshToken> expiredTokens;
+        do {
+            expiredTokens = this.refreshTokenRepository.findByExpiryDateBefore(now, pageRequest);
+            if (!expiredTokens.isEmpty()) {
+                this.refreshTokenRepository.deleteAll(expiredTokens.getContent());
+                this.refreshTokenRepository.flush();
+            }
+
+        } while (!expiredTokens.isEmpty());
+    }
 }
