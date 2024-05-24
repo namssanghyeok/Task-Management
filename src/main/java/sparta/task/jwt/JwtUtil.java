@@ -4,6 +4,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -27,7 +28,8 @@ public class JwtUtil {
     // Token 식별자
     public static final String BEARER_PREFIX = "Bearer ";
     // 토큰 만료시간
-    private final long ACCESS_EXPIRATION_TOKEN_TIME = 60 * 60 * 1000L; // 60분
+    private final long ACCESS_EXPIRATION_TOKEN_TIME = 10 * 1000L; // 10초
+//    private final long ACCESS_EXPIRATION_TOKEN_TIME = 60 * 60 * 1000L; // 60분
     private final long REFRESH_EXPIRATION_TIME = ACCESS_EXPIRATION_TOKEN_TIME * 24 * 7;
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
@@ -57,17 +59,6 @@ public class JwtUtil {
                 .compact();
     }
 
-    public String createRefreshToken(User user) {
-        Date date = new Date();
-
-        return Jwts.builder()
-                .setSubject(user.getUsername()) // 사용자 식별자값(ID)
-                .claim(CLAIM_ID, user.getId())
-                .setExpiration(new Date(date.getTime() + REFRESH_EXPIRATION_TIME)) // 만료 시간
-                .setIssuedAt(date) // 발급일
-                .compact();
-    }
-
     // header 에서 JWT 가져오기
     public String getJwtFromHeader(HttpServletRequest request) {
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
@@ -78,13 +69,14 @@ public class JwtUtil {
     }
 
     // 토큰 검증
-    public boolean validateToken(String token) {
+    public boolean validateToken(String token, HttpServletResponse response) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (SecurityException | MalformedJwtException | SignatureException e) {
             log.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
         } catch (ExpiredJwtException e) {
+            response.setStatus(418);
             log.error("Expired JWT token, 만료된 JWT token 입니다.");
         } catch (UnsupportedJwtException e) {
             log.error("Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.");

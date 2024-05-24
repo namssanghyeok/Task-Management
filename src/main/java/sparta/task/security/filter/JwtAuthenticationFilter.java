@@ -19,18 +19,21 @@ import sparta.task.exception.CustomErrorResponse;
 import sparta.task.jwt.JwtUtil;
 import sparta.task.model.User;
 import sparta.task.security.principal.UserPrincipal;
+import sparta.task.service.RefreshTokenService;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Slf4j(topic = "로그인 및 JWT 생성")
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final JwtUtil jwtUtil;
-    private final ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final RefreshTokenService refreshTokenService;
 
-    public JwtAuthenticationFilter(JwtUtil jwtUtil) {
+    public JwtAuthenticationFilter(JwtUtil jwtUtil, RefreshTokenService refreshTokenService) {
         this.jwtUtil = jwtUtil;
-        objectMapper = new ObjectMapper();
+        this.refreshTokenService = refreshTokenService;
         setFilterProcessesUrl("/api/user/login");
     }
 
@@ -57,7 +60,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         User user = ((UserPrincipal) authResult.getPrincipal()).getUser();
 
         String accessToken = jwtUtil.createAccessToken(user);
-        String refreshToken = jwtUtil.createRefreshToken(user);
+        UUID refreshToken = refreshTokenService.create(user);
 
         TokenDto tokenDto = TokenDto.builder()
                 .accessToken(accessToken)

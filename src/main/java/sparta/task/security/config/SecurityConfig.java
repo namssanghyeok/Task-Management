@@ -20,12 +20,14 @@ import sparta.task.model.UserRoleEnum;
 import sparta.task.security.exception.AccessDeniedHandlerImpl;
 import sparta.task.security.filter.JwtAuthenticationFilter;
 import sparta.task.security.filter.JwtAuthorizationFilter;
+import sparta.task.service.RefreshTokenService;
 
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtUtil jwtUtil;
     private final AuthenticationConfiguration authenticationConfiguration;
+    private final RefreshTokenService refreshTokenService;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -42,8 +44,7 @@ public class SecurityConfig {
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
-        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtil);
-        // 왜 생성자로 주입 안하고, setter 를 만들고 주입하는거지?
+        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtil, refreshTokenService);
         filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
         return filter;
     }
@@ -76,6 +77,9 @@ public class SecurityConfig {
         http.authorizeHttpRequests(requests ->
                 requests.requestMatchers(HttpMethod.POST, "/api/user", "/api/user/").anonymous()
                         .requestMatchers(HttpMethod.POST, "/api/user/login", "/api/user/login/").anonymous()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/reissue", "/api/auth/reissue/").anonymous()
+                        .requestMatchers("/admin/**").hasAuthority(UserRoleEnum.ADMIN.getAuthority())
+                        // 테스트
                         .requestMatchers("/api/task/test", "/api/task/test/").permitAll()
                         .requestMatchers("/api/task/admin").hasAuthority(UserRoleEnum.ADMIN.getAuthority())
                         .requestMatchers("/api/task/user").hasAuthority(UserRoleEnum.USER.getAuthority())

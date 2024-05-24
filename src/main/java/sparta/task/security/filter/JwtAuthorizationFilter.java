@@ -43,9 +43,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             return;
         }
 
-        // TODO: token이 만료되었다면, refresh-token 을 이용해 access token을 재발급
-        // TODO: 제대로 된 토큰이고, refresh token 이 있다면 기간을 오늘로부터 1달 늘리기
-        if (StringUtils.hasText(tokenValue) && jwtUtil.validateToken(tokenValue)) {
+        if (StringUtils.hasText(tokenValue) && jwtUtil.validateToken(tokenValue, res)) {
             Claims claims = jwtUtil.getUserInfoFromToken(tokenValue);
             try {
                 setAuthentication(claims);
