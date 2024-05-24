@@ -12,12 +12,14 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import sparta.task.jwt.JwtUtil;
 import sparta.task.model.UserRoleEnum;
 import sparta.task.security.exception.AccessDeniedHandlerImpl;
+import sparta.task.security.exception.AuthenticationEntryPointImpl;
 import sparta.task.security.filter.JwtAuthenticationFilter;
 import sparta.task.security.filter.JwtAuthorizationFilter;
 import sparta.task.service.RefreshTokenService;
@@ -59,6 +61,11 @@ public class SecurityConfig {
         return new AccessDeniedHandlerImpl();
     }
 
+    @Bean
+    AuthenticationEntryPoint authenticationEntryPoint() {
+        return new AuthenticationEntryPointImpl();
+    }
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -70,7 +77,10 @@ public class SecurityConfig {
         http.sessionManagement((httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)));
 
-        http.exceptionHandling(e -> e.accessDeniedHandler(accessDeniedHandler()));
+        http.exceptionHandling(e -> e
+                .accessDeniedHandler(accessDeniedHandler())
+                .authenticationEntryPoint(authenticationEntryPoint())
+        );
 
         http.headers(headers -> headers.frameOptions().disable());
 
