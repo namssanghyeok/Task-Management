@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 
 @RestControllerAdvice
 public class GlobalErrorHandler {
-
     @ExceptionHandler
     ResponseEntity<?> handleException(HttpStatusException ex, HttpServletRequest request) {
         return ResponseEntity.status(ex.getErrorCode().getCode()).body(
@@ -29,7 +28,7 @@ public class GlobalErrorHandler {
     }
 
     @ExceptionHandler
-    ResponseEntity<CustomErrorResponse> handleException(MethodArgumentNotValidException ex, HttpServletRequest request) {
+    ResponseEntity<CustomErrorResponse> handleBeanValidationException(MethodArgumentNotValidException ex, HttpServletRequest request) {
         StringBuilder sb = new StringBuilder();
         ex.getBindingResult().getAllErrors().forEach(error -> {
             FieldError fieldError = (FieldError) error;

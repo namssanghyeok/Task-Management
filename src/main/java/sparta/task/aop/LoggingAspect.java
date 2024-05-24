@@ -1,20 +1,20 @@
 package sparta.task.aop;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
-import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
-import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Aspect
-@Component
 @Slf4j
+@Component
+@Aspect
 public class LoggingAspect {
     @Pointcut("execution(* sparta.task.web.controller..*.*(..))")
     private void methodsFromControllerPackage() {
@@ -46,17 +46,22 @@ public class LoggingAspect {
         log.error("Exception in {}.{}() with exception: {} caused: {}", className, name, e, e.getMessage());
     }
 
+    // NOTE: GlobalExceptionHandler
+    @Pointcut("execution(* sparta.task.exception.handler..*.*(..))")
+    private void methodsFromExceptionHandler() {
+    }
 
-//    @After("onRequest() || methodsFromServicePackage()")
-//    public void afterMethod(JoinPoint joinPoint) throws Throwable {
-//        MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
-//        Method method = methodSignature.getMethod();
-//        String methodName = method.getName();
-//        // Object result = joinPoint.proceed();
-//        log.info("------ after -------");
-//        log.info("METHOD NAME={}", methodName);
-//        // log.info("RESTULT={}", result);
-//    }
+    @Before("methodsFromExceptionHandler()")
+    public void logAroundExceptionHandler(JoinPoint joinPoint) {
+        HttpServletRequest request = // 5
+                ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        String uri = request.getRequestURI();
+        String method = request.getMethod();
+        // TODO: arguments 에서 exception 객체만 걸러내고 error 내용 정제해서 보여주기
+        String arguments = Arrays.toString(joinPoint.getArgs());
+        System.out.println("length: " + joinPoint.getArgs().length);
+        log.info("ExceptionHandler Request [{}]{} from {}. Error: {}", method, uri, request.getRemoteHost(), arguments);
+    }
 
     private String paramMapToString(Map<String, String[]> paramMap) {
         return paramMap.entrySet().stream()
