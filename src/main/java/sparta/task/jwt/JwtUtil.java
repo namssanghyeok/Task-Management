@@ -24,13 +24,19 @@ public class JwtUtil {
     public static final String CLAIM_ROLE = "role";
     public static final String CLAIM_ID = "id";
     public static final String CLAIM_NICKNAME = "nickname";
-
     // Token 식별자
     public static final String BEARER_PREFIX = "Bearer ";
+
+    //
+    public static final String JWT_ERROR_KEY = "expired";
+
+
     // 토큰 만료시간
     private final long ACCESS_EXPIRATION_TOKEN_TIME = 10 * 1000L; // 10초
 //    private final long ACCESS_EXPIRATION_TOKEN_TIME = 60 * 60 * 1000L; // 60분
     private final long REFRESH_EXPIRATION_TIME = ACCESS_EXPIRATION_TOKEN_TIME * 24 * 7;
+
+
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
     @Value("${jwt.secret.key}") // Base64 Encode 한 SecretKey
@@ -69,14 +75,14 @@ public class JwtUtil {
     }
 
     // 토큰 검증
-    public boolean validateToken(String token, HttpServletResponse response) {
+    public boolean validateToken(String token, HttpServletRequest request) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (SecurityException | MalformedJwtException | SignatureException e) {
             log.error("Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.");
         } catch (ExpiredJwtException e) {
-            response.setStatus(418);
+            request.setAttribute("expired", true);
             log.error("Expired JWT token, 만료된 JWT token 입니다.");
         } catch (UnsupportedJwtException e) {
             log.error("Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.");
@@ -89,5 +95,9 @@ public class JwtUtil {
     // 토큰에서 사용자 정보 가져오기
     public Claims getUserInfoFromToken(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+    }
+
+    static public boolean isExpiredAccessToken(HttpServletRequest request) {
+        return request.getAttribute("expired") != null && (Boolean) request.getAttribute("expired");
     }
 }

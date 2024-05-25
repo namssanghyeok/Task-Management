@@ -43,7 +43,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (StringUtils.hasText(tokenValue) && jwtUtil.validateToken(tokenValue, res)) {
+        if (StringUtils.hasText(tokenValue) && jwtUtil.validateToken(tokenValue, req)) {
             Claims claims = jwtUtil.getUserInfoFromToken(tokenValue);
             try {
                 setAuthentication(claims);
