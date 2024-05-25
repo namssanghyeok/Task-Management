@@ -1,4 +1,4 @@
-package sparta.task.exception;
+package sparta.task.constants;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

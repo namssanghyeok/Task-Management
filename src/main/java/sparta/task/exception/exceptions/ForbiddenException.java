@@ -1,6 +1,6 @@
 package sparta.task.exception.exceptions;
 
-import sparta.task.exception.ErrorCode;
+import sparta.task.constants.ErrorCode;
 
 public class ForbiddenException extends HttpStatusException{
     public ForbiddenException() {

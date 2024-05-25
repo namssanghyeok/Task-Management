@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import sparta.task.dto.request.*;
 import sparta.task.dto.response.TaskResponseDto;
 import sparta.task.exception.CustomErrorResponse;
-import sparta.task.exception.ErrorCode;
+import sparta.task.constants.ErrorCode;
 import sparta.task.exception.exceptions.HttpStatusException;
 import sparta.task.model.Task;
 import sparta.task.model.UploadFile;

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
 import sparta.task.dto.response.UploadFileResponseDto;
-import sparta.task.exception.ErrorCode;
+import sparta.task.constants.ErrorCode;
 import sparta.task.exception.exceptions.ForbiddenException;
 import sparta.task.exception.exceptions.HttpStatusException;
 import sparta.task.mapper.UploadFileMapper;

@@ -8,7 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import sparta.task.dto.TokenDto;
 import sparta.task.dto.request.ReIssueAccessTokenRequestDto;
-import sparta.task.exception.ErrorCode;
+import sparta.task.constants.ErrorCode;
 import sparta.task.exception.exceptions.HttpStatusException;
 import sparta.task.jwt.JwtUtil;
 import sparta.task.model.RefreshToken;

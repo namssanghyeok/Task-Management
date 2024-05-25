@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import sparta.task.dto.request.CreateCommentRequestDto;
 import sparta.task.dto.request.UpdateCommentDto;
 import sparta.task.dto.response.CommentResponseDto;
-import sparta.task.exception.ErrorCode;
+import sparta.task.constants.ErrorCode;
 import sparta.task.exception.exceptions.HttpStatusException;
 import sparta.task.mapper.CommentMapper;
 import sparta.task.model.Comment;

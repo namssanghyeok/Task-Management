@@ -2,7 +2,7 @@ package sparta.task.exception.exceptions;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import sparta.task.exception.ErrorCode;
+import sparta.task.constants.ErrorCode;
 
 @Getter
 @RequiredArgsConstructor
