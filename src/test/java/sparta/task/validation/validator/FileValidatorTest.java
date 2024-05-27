@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import sparta.task.presentational.web.validation.validator.FileValidator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

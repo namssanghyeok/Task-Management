@@ -9,8 +9,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
+import sparta.task.application.store.LocalFileStore;
 import sparta.task.exception.exceptions.HttpStatusException;
-import sparta.task.model.UploadFile;
+import sparta.task.domain.model.UploadFile;
 
 import java.io.File;
 import java.io.IOException;
