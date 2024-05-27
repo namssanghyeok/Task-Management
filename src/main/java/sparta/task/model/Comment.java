@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import sparta.task.model.common.TimeStamp;
 
+import java.util.UUID;
+
 @Getter
 @Entity
 @Builder
@@ -15,19 +17,23 @@ import sparta.task.model.common.TimeStamp;
 @Table(name = "comment")
 public class Comment extends TimeStamp {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "comment_id")
-    private long id;
+    private UUID id;
 
     private String content;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")
     private User author;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "task_id")
     private Task task;
+
+
+    public void setTask(Task task) {
+        this.task = task;
+    }
 
     @Transient
     public boolean canUpdateBy(User currentUser) {

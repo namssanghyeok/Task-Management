@@ -8,13 +8,15 @@ import sparta.task.model.Comment;
 import sparta.task.model.Task;
 import sparta.task.model.User;
 
+import java.util.UUID;
+
 @Component
 public class CommentMapper {
-    public Comment createDtoToEntity(CreateCommentRequestDto requestDto, Task task, User user) {
+    public Comment createDtoToEntity(CreateCommentRequestDto requestDto, User user) {
         return Comment.builder()
+                .id(UUID.randomUUID())
                 .content(requestDto.getContent())
                 .author(user)
-                .task(task)
                 .build();
     }
 

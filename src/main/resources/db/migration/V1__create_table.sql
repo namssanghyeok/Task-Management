@@ -28,7 +28,7 @@ create table task
 
 create table comment
 (
-    comment_id bigint primary key auto_increment,
+    comment_id uuid primary key,
     content varchar,
 
     task_id bigint,
