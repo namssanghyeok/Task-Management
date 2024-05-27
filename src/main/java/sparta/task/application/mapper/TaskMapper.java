@@ -1,9 +1,9 @@
 package sparta.task.application.mapper;
 
 import org.springframework.stereotype.Component;
-import sparta.task.presentational.web.dto.request.CreateTaskRequestDto;
-import sparta.task.presentational.web.dto.request.UpdateTaskRequestDto;
-import sparta.task.presentational.web.dto.response.TaskResponseDto;
+import sparta.task.presentational.dto.request.CreateTaskRequestDto;
+import sparta.task.presentational.dto.request.UpdateTaskRequestDto;
+import sparta.task.presentational.dto.response.TaskResponseDto;
 import sparta.task.domain.model.Task;
 import sparta.task.domain.model.User;
 

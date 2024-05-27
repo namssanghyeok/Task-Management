@@ -7,10 +7,9 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
-import sparta.task.presentational.web.dto.response.UploadFileResponseDto;
-import sparta.task.constants.ErrorCode;
-import sparta.task.exception.exceptions.ForbiddenException;
-import sparta.task.exception.exceptions.HttpStatusException;
+import sparta.task.presentational.dto.response.UploadFileResponseDto;
+import sparta.task.infrastructure.exception.constants.ErrorCode;
+import sparta.task.infrastructure.exception.HttpStatusException;
 import sparta.task.application.mapper.UploadFileMapper;
 import sparta.task.domain.model.Task;
 import sparta.task.domain.model.UploadFile;
@@ -89,7 +88,7 @@ public class FileService {
         UploadFile uploadFile = this.uploadFileJpaRepository.findById(id).orElseThrow(() -> new HttpStatusException(ErrorCode.FILE_NOT_FOUND));
         Task task = this.taskJpaRepository.findById(uploadFile.getTaskId()).orElseThrow(() -> new HttpStatusException(ErrorCode.FILE_NOT_FOUND));
         if(task.canUpdateBy(currentUser)) {
-            throw new ForbiddenException();
+            throw new HttpStatusException(ErrorCode.FORBIDDEN);
         }
 
         this.uploadFileJpaRepository.deleteById(id);

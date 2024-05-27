@@ -6,8 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
-import sparta.task.constants.ErrorMessage;
-import sparta.task.exception.CustomErrorResponse;
+import sparta.task.infrastructure.exception.constants.ErrorMessage;
+import sparta.task.presentational.exception.CustomErrorResponse;
 import sparta.task.infrastructure.jwt.JwtUtil;
 
 import java.io.IOException;

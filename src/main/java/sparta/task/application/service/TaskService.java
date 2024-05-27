@@ -4,20 +4,18 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import sparta.task.presentational.web.dto.request.CreateTaskRequestDto;
-import sparta.task.presentational.web.dto.request.UpdateTaskRequestDto;
-import sparta.task.presentational.web.dto.response.TaskResponseDto;
-import sparta.task.presentational.web.dto.response.UploadFileResponseDto;
+import sparta.task.presentational.dto.request.CreateTaskRequestDto;
+import sparta.task.presentational.dto.request.UpdateTaskRequestDto;
+import sparta.task.presentational.dto.response.TaskResponseDto;
+import sparta.task.presentational.dto.response.UploadFileResponseDto;
 import sparta.task.application.mapper.TaskMapper;
 import sparta.task.application.mapper.UploadFileMapper;
-import sparta.task.constants.ErrorCode;
+import sparta.task.infrastructure.exception.constants.ErrorCode;
 import sparta.task.domain.model.Task;
 import sparta.task.domain.model.User;
 import sparta.task.domain.repository.TaskRepository;
 import sparta.task.domain.repository.UserRepository;
-import sparta.task.exception.exceptions.ForbiddenException;
-import sparta.task.exception.exceptions.HttpStatusException;
-import sparta.task.exception.exceptions.UserNotFound;
+import sparta.task.infrastructure.exception.HttpStatusException;
 
 import java.util.List;
 
@@ -58,17 +56,17 @@ public class TaskService {
     }
 
     @Transactional
-    public TaskResponseDto updateTaskBy(Long id, UpdateTaskRequestDto updateTaskRequestDto, User currentUser) {
-        // 1. find
+    public TaskResponseDto updateTaskBy(Long id, UpdateTaskRequestDto updateTaskRequestDto, User currentUser) { // 1. find Task task = this.taskRepository.getById(id);
+        // task 자체에서 이걸 해야함
         Task task = this.taskRepository.getById(id);
         // 2. 수정할 수 있는 사람인지?
         if (!task.canUpdateBy(currentUser)) {
-            throw new ForbiddenException();
+            throw new HttpStatusException(ErrorCode.FORBIDDEN);
         }
         User newAssignee = null;
         if (updateTaskRequestDto.getAssignee() != null) {
             newAssignee = this.userRepository.findByUsername(updateTaskRequestDto.getAssignee())
-                    .orElseThrow(UserNotFound::new);
+                    .orElseThrow(() -> new HttpStatusException(ErrorCode.USER_NOT_FOUND));
         }
         // 3. update & save
         task.update(this.taskMapper.updateTaskDtoToEntity(updateTaskRequestDto, newAssignee));

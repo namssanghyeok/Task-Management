@@ -13,9 +13,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import sparta.task.presentational.web.dto.TokenDto;
-import sparta.task.presentational.web.dto.request.LoginRequestDto;
-import sparta.task.exception.CustomErrorResponse;
+import sparta.task.presentational.dto.TokenDto;
+import sparta.task.presentational.dto.request.LoginRequestDto;
+import sparta.task.presentational.exception.CustomErrorResponse;
 import sparta.task.infrastructure.security.principal.UserPrincipal;
 import sparta.task.infrastructure.jwt.JwtUtil;
 import sparta.task.domain.model.User;

@@ -15,13 +15,13 @@ public class TimeStamp {
     @CreatedDate
     @Column(updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
-    private LocalDateTime createdAt;
+    protected LocalDateTime createdAt;
 
     @LastModifiedDate
     @Temporal(TemporalType.TIMESTAMP)
-    private LocalDateTime updatedAt;
+    protected LocalDateTime updatedAt;
 
-    private LocalDateTime deletedAt;
+    protected LocalDateTime deletedAt;
 
     public void delete() {
         this.deletedAt = LocalDateTime.now();

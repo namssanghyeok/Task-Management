@@ -1,31 +1,7 @@
 package sparta.task.service;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
-import sparta.task.presentational.web.dto.request.CreateTaskRequestDto;
-import sparta.task.presentational.web.dto.request.UpdateTaskRequestDto;
-import sparta.task.presentational.web.dto.response.TaskResponseDto;
-import sparta.task.application.service.TaskService;
-import sparta.task.exception.exceptions.HttpStatusException;
-import sparta.task.application.mapper.TaskMapper;
-import sparta.task.application.mapper.UploadFileMapper;
-import sparta.task.domain.model.Task;
-import sparta.task.domain.model.UploadFile;
-import sparta.task.domain.model.User;
-import sparta.task.infrastructure.repository.jpa.TaskJpaRepository;
-import sparta.task.infrastructure.repository.jpa.UserJpaRepository;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;

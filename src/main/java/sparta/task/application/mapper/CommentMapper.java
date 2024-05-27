@@ -1,9 +1,9 @@
 package sparta.task.application.mapper;
 
 import org.springframework.stereotype.Component;
-import sparta.task.presentational.web.dto.request.CreateCommentRequestDto;
-import sparta.task.presentational.web.dto.request.UpdateCommentDto;
-import sparta.task.presentational.web.dto.response.CommentResponseDto;
+import sparta.task.presentational.dto.request.CreateCommentRequestDto;
+import sparta.task.presentational.dto.request.UpdateCommentDto;
+import sparta.task.presentational.dto.response.CommentResponseDto;
 import sparta.task.domain.model.Comment;
 import sparta.task.domain.model.User;
 

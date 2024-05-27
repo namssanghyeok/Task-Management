@@ -5,9 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.coyote.BadRequestException;
 import org.hibernate.annotations.DynamicInsert;
+import sparta.task.infrastructure.exception.constants.ErrorCode;
 import sparta.task.domain.model.common.TimeStamp;
+import sparta.task.infrastructure.exception.HttpStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +24,7 @@ import java.util.UUID;
 public class Task extends TimeStamp {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "task_id")
-    private Long id;
+    @Column(name = "task_id") private Long id;
 
     private String title;
 
@@ -59,13 +59,15 @@ public class Task extends TimeStamp {
 
     @Transient
     public boolean canUpdateBy(User user) {
-        return user.getId().equals(getAuthor().getId()) || user.getId().equals(getAssignee().getId()) || user.isAdmin();
+        return user.getId().equals(getAuthor().getId())
+                || user.getId().equals(getAssignee().getId())
+                || user.isAdmin();
     }
 
     @Transient
     public void delete(User currentUser) {
         if (this.isDeleted()) {
-            throw new RuntimeException("already deleted");
+            throw new HttpStatusException(ErrorCode.ALREADY_DELETED);
         }
         if (!this.canUpdateBy(currentUser)) {
             throw new RuntimeException("권한없음");
@@ -76,16 +78,16 @@ public class Task extends TimeStamp {
 
     @Transient
     public boolean isDeleted() {
-        return this.getDeletedAt() != null;
+        return this.deletedAt != null;
     }
 
     public void addComment(Comment comment) {
-        this.comments.add(comment);
+        comments.add(comment);
         comment.setTask(this);
     }
 
     public void deleteComment(UUID commentId, User currentUser) {
-        Comment comment = this.comments.stream()
+        Comment comment = comments.stream()
                 .filter(c -> c.getId().equals(commentId))
                 .findFirst().orElse(null);
 
@@ -98,11 +100,11 @@ public class Task extends TimeStamp {
             return;
         }
 
-        this.comments.removeIf(c -> c.getId().equals(commentId));
+        comments.removeIf(c -> c.getId().equals(commentId));
     }
 
     public Comment updateComment(UUID commentId, Comment updateComment, User currentUser) {
-        Comment comment = this.comments.stream()
+        Comment comment = comments.stream()
                 .filter(c -> c.getId().equals(commentId)).findFirst().orElse(null);
         if (comment == null || !canUpdateComment(comment, currentUser)) {
             // TODO: throw exception
