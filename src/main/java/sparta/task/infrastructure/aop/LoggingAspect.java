@@ -16,11 +16,11 @@ import java.util.stream.Collectors;
 @Component
 @Aspect
 public class LoggingAspect {
-    @Pointcut("execution(* sparta.task.web.controller..*.*(..))")
+    @Pointcut("execution(* sparta.task.presentational.web.controller..*.*(..))")
     private void methodsFromControllerPackage() {
     }
 
-    @Pointcut("execution(* sparta.task.service..*.*(..))")
+    @Pointcut("execution(* sparta.task.application.service..*.*(..))")
     private void methodsFromServicePackage() {
     }
 
@@ -47,7 +47,7 @@ public class LoggingAspect {
     }
 
     // NOTE: GlobalExceptionHandler
-    @Pointcut("execution(* sparta.task.exception.handler..*.*(..))")
+    @Pointcut("execution(* sparta.task.infrastructure.exception..*.*(..))")
     private void methodsFromExceptionHandler() {
     }
 

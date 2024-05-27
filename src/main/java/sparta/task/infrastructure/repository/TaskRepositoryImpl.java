@@ -10,7 +10,6 @@ import sparta.task.infrastructure.exception.constants.ErrorCode;
 import sparta.task.infrastructure.repository.jpa.TaskJpaRepository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -21,11 +20,6 @@ public class TaskRepositoryImpl implements TaskRepository {
     @Override
     public Task save(Task task) {
         return this.taskJpaRepository.save(task);
-    }
-
-    @Override
-    public Optional<Task> findById(Long id) {
-        return this.taskJpaRepository.findById(id);
     }
 
     @Override

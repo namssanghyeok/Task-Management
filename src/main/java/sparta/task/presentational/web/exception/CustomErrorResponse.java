@@ -1,4 +1,4 @@
-package sparta.task.presentational.exception;
+package sparta.task.presentational.web.exception;
 
 import lombok.Builder;
 import lombok.Getter;

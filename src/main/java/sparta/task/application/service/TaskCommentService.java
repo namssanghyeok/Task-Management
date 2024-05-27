@@ -24,7 +24,7 @@ public class TaskCommentService {
 
     @Transactional
     public CommentResponseDto addCommentToTask(Long taskId, CreateCommentRequestDto requestDto, User currentUser) {
-        Task task = findByIdOrThrow(taskId);
+        Task task = taskRepository.getById(taskId);
         Comment comment = commentMapper.createDtoToEntity(requestDto, currentUser);
         task.addComment(comment);
         taskRepository.save(task);
@@ -44,10 +44,4 @@ public class TaskCommentService {
         taskRepository.save(task);
         return commentMapper.toCommentResponseDto(comment);
     }
-
-    private Task findByIdOrThrow(Long id) {
-        return taskRepository.findById(id)
-                .orElseThrow(() -> new HttpStatusException(ErrorCode.TASK_NOT_FOUND));
-    }
-
 }

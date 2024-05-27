@@ -15,7 +15,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import sparta.task.application.dto.TokenDto;
 import sparta.task.application.dto.request.LoginRequestDto;
-import sparta.task.presentational.exception.CustomErrorResponse;
+import sparta.task.presentational.web.exception.CustomErrorResponse;
 import sparta.task.infrastructure.security.principal.UserPrincipal;
 import sparta.task.infrastructure.jwt.JwtUtil;
 import sparta.task.domain.model.User;

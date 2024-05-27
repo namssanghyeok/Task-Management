@@ -1,4 +1,4 @@
-package sparta.task.presentational.controller;
+package sparta.task.presentational.web.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
