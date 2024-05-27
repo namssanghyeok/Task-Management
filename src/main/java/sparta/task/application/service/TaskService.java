@@ -12,10 +12,10 @@ import sparta.task.domain.repository.TaskRepository;
 import sparta.task.domain.repository.UserRepository;
 import sparta.task.infrastructure.exception.HttpStatusException;
 import sparta.task.infrastructure.exception.constants.ErrorCode;
-import sparta.task.presentational.dto.request.CreateTaskRequestDto;
-import sparta.task.presentational.dto.request.UpdateTaskRequestDto;
-import sparta.task.presentational.dto.response.TaskResponseDto;
-import sparta.task.presentational.dto.response.UploadFileResponseDto;
+import sparta.task.application.dto.request.CreateTaskRequestDto;
+import sparta.task.application.dto.request.UpdateTaskRequestDto;
+import sparta.task.application.dto.response.TaskResponseDto;
+import sparta.task.application.dto.response.UploadFileResponseDto;
 
 import java.util.List;
 

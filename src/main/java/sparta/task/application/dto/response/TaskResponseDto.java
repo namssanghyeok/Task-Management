@@ -1,4 +1,4 @@
-package sparta.task.presentational.dto.response;
+package sparta.task.application.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;

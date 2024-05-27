@@ -13,8 +13,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import sparta.task.presentational.dto.TokenDto;
-import sparta.task.presentational.dto.request.LoginRequestDto;
+import sparta.task.application.dto.TokenDto;
+import sparta.task.application.dto.request.LoginRequestDto;
 import sparta.task.presentational.exception.CustomErrorResponse;
 import sparta.task.infrastructure.security.principal.UserPrincipal;
 import sparta.task.infrastructure.jwt.JwtUtil;
@@ -22,6 +22,7 @@ import sparta.task.domain.model.User;
 import sparta.task.application.service.RefreshTokenService;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -67,7 +68,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 .refreshToken(refreshToken)
                 .build();
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         response.getWriter().write(objectMapper.writeValueAsString(tokenDto));
         response.getWriter().flush();
     }
@@ -75,7 +76,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.setContentType("application/json");
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         response.getWriter().write(
                 CustomErrorResponse.builder()
                         .timestamp(LocalDateTime.now())

@@ -7,8 +7,8 @@ import sparta.task.application.mapper.UserMapper;
 import sparta.task.domain.repository.UserRepository;
 import sparta.task.infrastructure.exception.HttpStatusException;
 import sparta.task.infrastructure.exception.constants.ErrorCode;
-import sparta.task.presentational.dto.request.SignupUserRequestDto;
-import sparta.task.presentational.dto.response.UserResponseDto;
+import sparta.task.application.dto.request.SignupUserRequestDto;
+import sparta.task.application.dto.response.UserResponseDto;
 
 @Service
 @RequiredArgsConstructor

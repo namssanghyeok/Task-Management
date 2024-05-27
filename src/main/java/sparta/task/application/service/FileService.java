@@ -16,7 +16,7 @@ import sparta.task.domain.repository.TaskRepository;
 import sparta.task.domain.repository.UploadFileRepository;
 import sparta.task.infrastructure.exception.HttpStatusException;
 import sparta.task.infrastructure.exception.constants.ErrorCode;
-import sparta.task.presentational.dto.response.UploadFileResponseDto;
+import sparta.task.application.dto.response.UploadFileResponseDto;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

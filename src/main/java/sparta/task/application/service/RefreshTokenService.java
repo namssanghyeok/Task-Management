@@ -7,14 +7,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import sparta.task.domain.repository.RefreshTokenRepository;
-import sparta.task.presentational.dto.TokenDto;
-import sparta.task.presentational.dto.request.ReIssueAccessTokenRequestDto;
+import sparta.task.application.dto.TokenDto;
+import sparta.task.application.dto.request.ReIssueAccessTokenRequestDto;
 import sparta.task.infrastructure.exception.constants.ErrorCode;
 import sparta.task.infrastructure.exception.HttpStatusException;
 import sparta.task.infrastructure.jwt.JwtUtil;
 import sparta.task.domain.model.RefreshToken;
 import sparta.task.domain.model.User;
-import sparta.task.infrastructure.repository.jpa.RefreshTokenJpaRepository;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

@@ -21,10 +21,10 @@ import sparta.task.domain.model.UploadFile;
 import sparta.task.domain.model.User;
 import sparta.task.infrastructure.exception.HttpStatusException;
 import sparta.task.infrastructure.exception.constants.ErrorCode;
-import sparta.task.presentational.dto.request.CreateTaskRequestDto;
-import sparta.task.presentational.dto.request.UpdateTaskRequestDto;
-import sparta.task.presentational.dto.request.UploadFileRequestDto;
-import sparta.task.presentational.dto.response.TaskResponseDto;
+import sparta.task.application.dto.request.CreateTaskRequestDto;
+import sparta.task.application.dto.request.UpdateTaskRequestDto;
+import sparta.task.application.dto.request.UploadFileRequestDto;
+import sparta.task.application.dto.response.TaskResponseDto;
 import sparta.task.presentational.exception.CustomErrorResponse;
 import sparta.task.presentational.web.argumentResolver.annotation.LoginUser;
 

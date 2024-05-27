@@ -4,7 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import sparta.task.presentational.dto.request.ReIssueAccessTokenRequestDto;
+import sparta.task.application.dto.request.ReIssueAccessTokenRequestDto;
 import sparta.task.application.service.RefreshTokenService;
 
 @RestController

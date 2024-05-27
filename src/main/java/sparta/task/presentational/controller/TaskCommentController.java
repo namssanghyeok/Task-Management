@@ -7,8 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sparta.task.application.service.TaskCommentService;
 import sparta.task.domain.model.User;
-import sparta.task.presentational.dto.request.CreateCommentRequestDto;
-import sparta.task.presentational.dto.request.UpdateCommentDto;
+import sparta.task.application.dto.request.CreateCommentRequestDto;
+import sparta.task.application.dto.request.UpdateCommentDto;
 import sparta.task.presentational.web.argumentResolver.annotation.LoginUser;
 
 import java.util.UUID;

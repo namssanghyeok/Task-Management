@@ -5,15 +5,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import sparta.task.domain.repository.TaskRepository;
 import sparta.task.infrastructure.exception.constants.ErrorCode;
-import sparta.task.presentational.dto.request.CreateCommentRequestDto;
-import sparta.task.presentational.dto.request.UpdateCommentDto;
-import sparta.task.presentational.dto.response.CommentResponseDto;
+import sparta.task.application.dto.request.CreateCommentRequestDto;
+import sparta.task.application.dto.request.UpdateCommentDto;
+import sparta.task.application.dto.response.CommentResponseDto;
 import sparta.task.infrastructure.exception.HttpStatusException;
 import sparta.task.application.mapper.CommentMapper;
 import sparta.task.domain.model.Comment;
 import sparta.task.domain.model.Task;
 import sparta.task.domain.model.User;
-import sparta.task.infrastructure.repository.jpa.TaskJpaRepository;
 
 import java.util.UUID;
 
