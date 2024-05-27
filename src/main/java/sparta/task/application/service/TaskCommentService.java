@@ -3,6 +3,7 @@ package sparta.task.application.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import sparta.task.domain.repository.TaskRepository;
 import sparta.task.infrastructure.exception.constants.ErrorCode;
 import sparta.task.presentational.dto.request.CreateCommentRequestDto;
 import sparta.task.presentational.dto.request.UpdateCommentDto;
@@ -19,37 +20,35 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class TaskCommentService {
-    private final TaskJpaRepository taskJpaRepository;
-
+    private final TaskRepository taskRepository;
     private final CommentMapper commentMapper;
 
     @Transactional
     public CommentResponseDto addCommentToTask(Long taskId, CreateCommentRequestDto requestDto, User currentUser) {
-        Task task = this.findByIdOrThrow(taskId);
-        Comment comment = this.commentMapper.createDtoToEntity(requestDto, currentUser);
+        Task task = findByIdOrThrow(taskId);
+        Comment comment = commentMapper.createDtoToEntity(requestDto, currentUser);
         task.addComment(comment);
-        this.taskJpaRepository.save(task);
-        return this.commentMapper.toCommentResponseDto(comment);
+        taskRepository.save(task);
+        return commentMapper.toCommentResponseDto(comment);
     }
 
     @Transactional
     public void deleteCommentFromTask(Long taskId, UUID commentId, User currentUser) {
-        Task task = this.taskJpaRepository.findTaskByCommentId(taskId, commentId)
-                .orElseThrow(() -> new HttpStatusException(ErrorCode.NOT_FOUND));
+        Task task = taskRepository.getById(taskId);
         task.deleteComment(commentId, currentUser);
     }
 
     @Transactional
     public CommentResponseDto updateCommentFromTask(Long taskId, UUID commentId, UpdateCommentDto requestDto, User currentUser) {
-        Task task = this.taskJpaRepository.findTaskByCommentId(taskId, commentId)
-                .orElseThrow(() -> new HttpStatusException(ErrorCode.NOT_FOUND));
-        Comment comment = task.updateComment(commentId, this.commentMapper.updateDtoToEntity(requestDto), currentUser);
-        this.taskJpaRepository.save(task);
-        return this.commentMapper.toCommentResponseDto(comment);
+        Task task = taskRepository.getById(taskId);
+        Comment comment = task.updateComment(commentId, commentMapper.updateDtoToEntity(requestDto), currentUser);
+        taskRepository.save(task);
+        return commentMapper.toCommentResponseDto(comment);
     }
 
     private Task findByIdOrThrow(Long id) {
-        return this.taskJpaRepository.findById(id).orElseThrow(() -> new HttpStatusException(ErrorCode.TASK_NOT_FOUND));
+        return taskRepository.findById(id)
+                .orElseThrow(() -> new HttpStatusException(ErrorCode.TASK_NOT_FOUND));
     }
 
 }

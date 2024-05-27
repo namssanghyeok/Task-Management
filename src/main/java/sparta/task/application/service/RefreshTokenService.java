@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import sparta.task.domain.repository.RefreshTokenRepository;
 import sparta.task.presentational.dto.TokenDto;
 import sparta.task.presentational.dto.request.ReIssueAccessTokenRequestDto;
 import sparta.task.infrastructure.exception.constants.ErrorCode;
@@ -23,14 +24,15 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class RefreshTokenService {
     private final JwtUtil jwtUtil;
-    private final RefreshTokenJpaRepository refreshTokenJpaRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     // create..
     public UUID create(User user) {
         // 기존의 토큰 제거
-        this.refreshTokenJpaRepository.findByUser(user).ifPresent(this.refreshTokenJpaRepository::delete);
+        refreshTokenRepository.findByUser(user)
+                .ifPresent(refreshTokenRepository::delete);
         UUID uuid = UUID.randomUUID();
-        this.refreshTokenJpaRepository.save(
+        refreshTokenRepository.save(
                 RefreshToken.builder()
                         .token(uuid)
                         .expiryDate(LocalDateTime.now().plusMonths(1))
@@ -40,16 +42,9 @@ public class RefreshTokenService {
         return uuid;
     }
 
-    // getByToken
-    public RefreshToken getByToken(UUID token) {
-        return this.refreshTokenJpaRepository.findByToken(token)
-                .orElseThrow(() -> new HttpStatusException(ErrorCode.NOT_FOUND));
-    }
-
     @Transactional
     public TokenDto reissueAccessToken(ReIssueAccessTokenRequestDto requestDto) {
-        RefreshToken refreshToken = this.getByToken(requestDto.getRefreshToken());
-        // check refresh token is expired
+        RefreshToken refreshToken = refreshTokenRepository.getByToken(requestDto.getRefreshToken());
         if (refreshToken.expired()) {
             throw new HttpStatusException(ErrorCode.EXPIRED_TOKEN);
         }
@@ -67,10 +62,10 @@ public class RefreshTokenService {
         PageRequest pageRequest = PageRequest.of(0, BATCH_SIZE);
         Page<RefreshToken> expiredTokens;
         do {
-            expiredTokens = this.refreshTokenJpaRepository.findByExpiryDateBefore(now, pageRequest);
+            expiredTokens = refreshTokenRepository.findAllExpiredToken(now, pageRequest);
             if (!expiredTokens.isEmpty()) {
-                this.refreshTokenJpaRepository.deleteAll(expiredTokens.getContent());
-                this.refreshTokenJpaRepository.flush();
+                refreshTokenRepository.deleteAll(expiredTokens.getContent());
+                refreshTokenRepository.flush();
             }
 
         } while (!expiredTokens.isEmpty());

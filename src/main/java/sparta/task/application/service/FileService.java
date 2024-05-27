@@ -7,16 +7,16 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.multipart.MultipartFile;
-import sparta.task.presentational.dto.response.UploadFileResponseDto;
-import sparta.task.infrastructure.exception.constants.ErrorCode;
-import sparta.task.infrastructure.exception.HttpStatusException;
 import sparta.task.application.mapper.UploadFileMapper;
+import sparta.task.application.store.FileStore;
 import sparta.task.domain.model.Task;
 import sparta.task.domain.model.UploadFile;
 import sparta.task.domain.model.User;
-import sparta.task.infrastructure.repository.jpa.TaskJpaRepository;
-import sparta.task.infrastructure.repository.jpa.UploadFileJpaRepository;
-import sparta.task.application.store.FileStore;
+import sparta.task.domain.repository.TaskRepository;
+import sparta.task.domain.repository.UploadFileRepository;
+import sparta.task.infrastructure.exception.HttpStatusException;
+import sparta.task.infrastructure.exception.constants.ErrorCode;
+import sparta.task.presentational.dto.response.UploadFileResponseDto;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -28,8 +28,9 @@ import java.util.zip.ZipOutputStream;
 @Service
 @RequiredArgsConstructor
 public class FileService {
-    private final TaskJpaRepository taskJpaRepository;
-    private final UploadFileJpaRepository uploadFileJpaRepository;
+    private final TaskRepository taskRepository;
+    private final UploadFileRepository uploadFileRepository;
+
     private final UploadFileMapper uploadFileMapper;
     private final FileStore fileStore;
 
@@ -44,7 +45,7 @@ public class FileService {
         UploadFile uploadFile = this.fileStore.save(file);
         uploadFile.setTaskId(taskId);
         try {
-            return this.uploadFileMapper.toUploadFileResponseDto(this.uploadFileJpaRepository.save(uploadFile));
+            return this.uploadFileMapper.toUploadFileResponseDto(this.uploadFileRepository.save(uploadFile));
         } catch (Exception e) {
             // 저장 된 파일 삭제
             this.fileStore.delete(uploadFile);
@@ -53,8 +54,7 @@ public class FileService {
     }
 
     public UploadFile getByFilename(String filename) {
-        return this.uploadFileJpaRepository.findByFilename(filename)
-                .orElseThrow(() -> new HttpStatusException(ErrorCode.FILE_NOT_FOUND));
+        return this.uploadFileRepository.getByFilename(filename);
     }
 
     public Resource getResource(UploadFile uploadFile) {
@@ -85,12 +85,12 @@ public class FileService {
     }
 
     public void deleteById(Long id, User currentUser) {
-        UploadFile uploadFile = this.uploadFileJpaRepository.findById(id).orElseThrow(() -> new HttpStatusException(ErrorCode.FILE_NOT_FOUND));
-        Task task = this.taskJpaRepository.findById(uploadFile.getTaskId()).orElseThrow(() -> new HttpStatusException(ErrorCode.FILE_NOT_FOUND));
-        if(task.canUpdateBy(currentUser)) {
+        UploadFile uploadFile = this.uploadFileRepository.getById(id);
+        Task task = this.taskRepository.getById(uploadFile.getTaskId());
+        if (task.canUpdateBy(currentUser)) {
             throw new HttpStatusException(ErrorCode.FORBIDDEN);
         }
 
-        this.uploadFileJpaRepository.deleteById(id);
+        this.uploadFileRepository.deleteById(id);
     }
 }

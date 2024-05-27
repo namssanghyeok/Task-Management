@@ -17,13 +17,23 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public Optional<User> findByUsername(String username) {
-        return this.userJpaRepository.findByUsername(username);
+        return userJpaRepository.findByUsername(username);
     }
 
     @Override
     public User getByUsername(String username) {
         // TODO: exception 정의하기
-        return this.userJpaRepository.findByUsername(username)
+        return userJpaRepository.findByUsername(username)
                 .orElseThrow(() -> new HttpStatusException(ErrorCode.USER_NOT_FOUND));
+    }
+
+    @Override
+    public boolean existsByUsername(String username) {
+        return userJpaRepository.existsByUsername(username);
+    }
+
+    @Override
+    public User save(User user) {
+        return userJpaRepository.save(user);
     }
 }
