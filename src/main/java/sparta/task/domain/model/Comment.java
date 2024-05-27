@@ -1,11 +1,10 @@
 package sparta.task.domain.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import sparta.task.domain.model.common.TimeStamp;
+import sparta.task.infrastructure.exception.HttpStatusException;
+import sparta.task.infrastructure.exception.constants.ErrorCode;
 
 import java.util.UUID;
 
@@ -41,7 +40,21 @@ public class Comment extends TimeStamp {
     }
 
     @Transient
-    public void update(Comment comment) {
-        this.content = comment.getContent();
+    public void delete(User currentUser) {
+        if (this.isDeleted()) {
+            throw new HttpStatusException(ErrorCode.ALREADY_DELETED);
+        }
+        if (!canUpdateBy(currentUser)) {
+            throw new HttpStatusException(ErrorCode.FORBIDDEN);
+        }
+        super.delete();
+    }
+
+    @Transient
+    public void update(Comment comment, User currentUser) {
+        if (this.canUpdateBy(currentUser)) {
+            throw new HttpStatusException(ErrorCode.FORBIDDEN);
+        }
+        this.content = comment.content;
     }
 }

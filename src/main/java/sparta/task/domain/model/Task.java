@@ -5,10 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.DynamicInsert;
-import sparta.task.infrastructure.exception.constants.ErrorCode;
 import sparta.task.domain.model.common.TimeStamp;
 import sparta.task.infrastructure.exception.HttpStatusException;
+import sparta.task.infrastructure.exception.constants.ErrorCode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,13 +17,13 @@ import java.util.UUID;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@DynamicInsert
 @Table(name = "task")
 @Entity
 public class Task extends TimeStamp {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "task_id") private Long id;
+    @Column(name = "task_id")
+    private Long id;
 
     private String title;
 
@@ -46,14 +45,14 @@ public class Task extends TimeStamp {
 
     // domain logic
     public void update(Task task) {
-        if (task.getTitle() != null && !task.getTitle().isEmpty()) {
-            this.title = task.getTitle();
+        if (task.title != null && !task.title.isEmpty()) {
+            this.title = task.title;
         }
-        if (task.getContent() != null && !task.getContent().isEmpty()) {
-            this.content = task.getContent();
+        if (task.content != null && !task.content.isEmpty()) {
+            this.content = task.content;
         }
-        if (task.getAssignee() != null) {
-            this.assignee = task.getAssignee();
+        if (task.assignee != null) {
+            this.assignee = task.assignee;
         }
     }
 
@@ -70,7 +69,7 @@ public class Task extends TimeStamp {
             throw new HttpStatusException(ErrorCode.ALREADY_DELETED);
         }
         if (!this.canUpdateBy(currentUser)) {
-            throw new RuntimeException("권한없음");
+            throw new HttpStatusException(ErrorCode.FORBIDDEN);
         }
         super.delete();
     }
@@ -81,40 +80,34 @@ public class Task extends TimeStamp {
         return this.deletedAt != null;
     }
 
+    @Transient
     public void addComment(Comment comment) {
         comments.add(comment);
         comment.setTask(this);
     }
 
+    @Transient
     public void deleteComment(UUID commentId, User currentUser) {
         Comment comment = comments.stream()
                 .filter(c -> c.getId().equals(commentId))
-                .findFirst().orElse(null);
+                .findFirst()
+                .orElseThrow(() -> new HttpStatusException(ErrorCode.NOT_FOUND));
 
-        if (comment == null) {
-            return;
+        if (!comment.canUpdateBy(currentUser)) {
+            throw new HttpStatusException(ErrorCode.FORBIDDEN);
         }
-
-        if (!currentUser.isAdmin() && !currentUser.getId().equals(comment.getAuthor().getId())) {
-            // throw exception - 본인 또는 어드민만 삭제할 수 있음
-            return;
-        }
+        comment.delete();
 
         comments.removeIf(c -> c.getId().equals(commentId));
     }
 
+    @Transient
     public Comment updateComment(UUID commentId, Comment updateComment, User currentUser) {
         Comment comment = comments.stream()
-                .filter(c -> c.getId().equals(commentId)).findFirst().orElse(null);
-        if (comment == null || !canUpdateComment(comment, currentUser)) {
-            // TODO: throw exception
-            return null;
-        }
-        comment.update(updateComment);
+                .filter(c -> c.getId().equals(commentId))
+                .findFirst()
+                .orElseThrow(() -> new HttpStatusException(ErrorCode.NOT_FOUND));
+        comment.update(updateComment, currentUser);
         return comment;
-    }
-
-    private boolean canUpdateComment(Comment comment, User currentUser) {
-        return currentUser.isAdmin() || currentUser.getId().equals(comment.getAuthor().getId());
     }
 }
