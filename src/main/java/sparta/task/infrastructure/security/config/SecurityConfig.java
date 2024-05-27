@@ -16,20 +16,16 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import sparta.task.domain.model.UserRoleEnum;
+import sparta.task.infrastructure.jwt.JwtUtil;
 import sparta.task.infrastructure.security.exception.AccessDeniedHandlerImpl;
 import sparta.task.infrastructure.security.exception.AuthenticationEntryPointImpl;
-import sparta.task.infrastructure.security.filter.JwtAuthenticationFilter;
 import sparta.task.infrastructure.security.filter.JwtAuthorizationFilter;
-import sparta.task.infrastructure.jwt.JwtUtil;
-import sparta.task.domain.model.UserRoleEnum;
-import sparta.task.application.service.RefreshTokenService;
 
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtUtil jwtUtil;
-    private final AuthenticationConfiguration authenticationConfiguration;
-    private final RefreshTokenService refreshTokenService;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -42,13 +38,6 @@ public class SecurityConfig {
             AuthenticationConfiguration authenticationConfiguration
     ) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
-    }
-
-    @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
-        JwtAuthenticationFilter filter = new JwtAuthenticationFilter(jwtUtil, refreshTokenService);
-        filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
-        return filter;
     }
 
     @Bean
@@ -86,8 +75,8 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(requests ->
                 requests.requestMatchers(HttpMethod.POST, "/api/user", "/api/user/").anonymous()
-                        .requestMatchers(HttpMethod.POST, "/api/user/login", "/api/user/login/").anonymous()
-                        .requestMatchers(HttpMethod.POST, "/api/auth/reissue", "/api/auth/reissue/").anonymous()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/reissue").anonymous()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/login").anonymous()
                         .requestMatchers("/admin/**").hasAuthority(UserRoleEnum.ADMIN.getAuthority())
                         // 테스트
                         .requestMatchers("/api/task/test", "/api/task/test/").permitAll()
@@ -97,8 +86,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
         );
 
-        http.addFilterBefore(jwtAuthorizationFilter(), JwtAuthenticationFilter.class);
-        http.addFilterAt(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
