@@ -11,6 +11,7 @@ import sparta.task.infrastructure.repository.jpa.TaskJpaRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Repository
@@ -36,6 +37,12 @@ public class TaskRepositoryImpl implements TaskRepository {
     public Task getById(Long id) {
         // TODO: exception 정의
         return this.taskJpaRepository.findById(id)
+                .orElseThrow(() -> new HttpStatusException(ErrorCode.TASK_NOT_FOUND));
+    }
+
+    @Override
+    public Task getTaskWithCommentByTaskIdAndCommentId(Long taskId, UUID commentId) {
+        return taskJpaRepository.findTaskWithCommentByTaskIdAndCommentId(taskId, commentId)
                 .orElseThrow(() -> new HttpStatusException(ErrorCode.TASK_NOT_FOUND));
     }
 }

@@ -33,13 +33,13 @@ public class TaskCommentService {
 
     @Transactional
     public void deleteCommentFromTask(Long taskId, UUID commentId, User currentUser) {
-        Task task = taskRepository.getById(taskId);
+        Task task = taskRepository.getTaskWithCommentByTaskIdAndCommentId(taskId, commentId);
         task.deleteComment(commentId, currentUser);
     }
 
     @Transactional
     public CommentResponseDto updateCommentFromTask(Long taskId, UUID commentId, UpdateCommentDto requestDto, User currentUser) {
-        Task task = taskRepository.getById(taskId);
+        Task task = taskRepository.getTaskWithCommentByTaskIdAndCommentId(taskId, commentId);
         Comment comment = task.updateComment(commentId, commentMapper.updateDtoToEntity(requestDto), currentUser);
         taskRepository.save(task);
         return commentMapper.toCommentResponseDto(comment);

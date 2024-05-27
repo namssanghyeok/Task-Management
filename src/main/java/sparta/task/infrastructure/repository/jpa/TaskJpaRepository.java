@@ -20,5 +20,5 @@ public interface TaskJpaRepository extends JpaRepository<Task, Long> {
 //    void deleteCommentByIdAndTaskId(@Param("commentId") Long commentId, @Param("taskId") Long taskId);
 
     @Query("SELECT t FROM Task t LEFT JOIN FETCH t.comments c WHERE t.id = :taskId AND c.id = :commentId")
-    Optional<Task> findTaskByCommentId(@Param("taskId") Long taskId, @Param("commentId") UUID commentId);
+    Optional<Task> findTaskWithCommentByTaskIdAndCommentId(@Param("taskId") Long taskId, @Param("commentId") UUID commentId);
 }
