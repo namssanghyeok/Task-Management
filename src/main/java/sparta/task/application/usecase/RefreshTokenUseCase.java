@@ -16,6 +16,7 @@ import sparta.task.domain.repository.RefreshTokenRepository;
 import sparta.task.application.dto.TokenDto;
 import sparta.task.application.dto.request.ReIssueAccessTokenRequestDto;
 import sparta.task.domain.service.RefreshTokenService;
+import sparta.task.infrastructure.annotation.UseCase;
 import sparta.task.infrastructure.exception.constants.ErrorCode;
 import sparta.task.infrastructure.exception.HttpStatusException;
 import sparta.task.infrastructure.jwt.JwtUtil;
@@ -27,7 +28,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Slf4j
-@Service
+@UseCase
 @RequiredArgsConstructor
 public class RefreshTokenUseCase {
     private final JwtUtil jwtUtil;

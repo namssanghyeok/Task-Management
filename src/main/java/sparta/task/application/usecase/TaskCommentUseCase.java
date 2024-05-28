@@ -11,10 +11,11 @@ import sparta.task.application.mapper.CommentMapper;
 import sparta.task.domain.model.Comment;
 import sparta.task.domain.model.Task;
 import sparta.task.domain.model.User;
+import sparta.task.infrastructure.annotation.UseCase;
 
 import java.util.UUID;
 
-@Service
+@UseCase
 @RequiredArgsConstructor
 public class TaskCommentUseCase {
     private final TaskRepository taskRepository;

@@ -10,6 +10,7 @@ import sparta.task.domain.model.Task;
 import sparta.task.domain.model.User;
 import sparta.task.domain.repository.TaskRepository;
 import sparta.task.domain.repository.UserRepository;
+import sparta.task.infrastructure.annotation.UseCase;
 import sparta.task.infrastructure.exception.HttpStatusException;
 import sparta.task.infrastructure.exception.constants.ErrorCode;
 import sparta.task.application.dto.request.CreateTaskRequestDto;
@@ -19,7 +20,7 @@ import sparta.task.application.dto.response.UploadFileResponseDto;
 
 import java.util.List;
 
-@Service
+@UseCase
 @RequiredArgsConstructor
 public class TaskUseCase {
 
