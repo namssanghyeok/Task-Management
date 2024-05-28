@@ -41,3 +41,6 @@ task_db.*
 
 ### files
 files/
+
+### env
+env/.env
