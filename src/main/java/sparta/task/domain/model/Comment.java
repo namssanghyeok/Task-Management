@@ -51,10 +51,7 @@ public class Comment extends TimeStamp {
     }
 
     @Transient
-    public void update(Comment comment, User currentUser) {
-        if (!this.canUpdateBy(currentUser)) {
-            throw new HttpStatusException(ErrorCode.FORBIDDEN);
-        }
+    public void update(Comment comment) {
         this.content = comment.content;
     }
 }

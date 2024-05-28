@@ -44,6 +44,7 @@ public class Task extends TimeStamp {
     private List<Comment> comments = new ArrayList<>();
 
     // domain logic
+    @Transient
     public void update(Task task) {
         if (task.title != null && !task.title.isEmpty()) {
             this.title = task.title;
@@ -64,20 +65,8 @@ public class Task extends TimeStamp {
     }
 
     @Transient
-    public void delete(User currentUser) {
-        if (this.isDeleted()) {
-            throw new HttpStatusException(ErrorCode.ALREADY_DELETED);
-        }
-        if (!this.canUpdateBy(currentUser)) {
-            throw new HttpStatusException(ErrorCode.FORBIDDEN);
-        }
-        super.delete();
-    }
-
-
-    @Transient
     public boolean isDeleted() {
-        return this.deletedAt != null;
+        return deletedAt != null;
     }
 
     @Transient
@@ -107,7 +96,11 @@ public class Task extends TimeStamp {
                 .filter(c -> c.getId().equals(commentId))
                 .findFirst()
                 .orElseThrow(() -> new HttpStatusException(ErrorCode.NOT_FOUND));
-        comment.update(updateComment, currentUser);
+
+        if (!comment.canUpdateBy(currentUser)) {
+            throw new HttpStatusException(ErrorCode.FORBIDDEN);
+        }
+        comment.update(updateComment);
         return comment;
     }
 }

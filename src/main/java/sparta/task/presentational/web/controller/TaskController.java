@@ -87,7 +87,7 @@ public class TaskController {
     })
     @GetMapping("/{id}")
     ResponseEntity<?> showTaskById(@PathVariable Long id) {
-        return ResponseEntity.ok(this.taskUseCase.showTaskById(id));
+        return ResponseEntity.ok(this.taskUseCase.getById(id));
     }
 
     @Operation(summary = "모든 task를 조회합니다.")
@@ -164,14 +164,15 @@ public class TaskController {
     })
     @GetMapping("/{id}/attachment/download")
     public ResponseEntity<?> downloadAllAttachments(@PathVariable Long id) {
-        Task task = this.taskUseCase.findById(id);
-        List<UploadFile> attachments = task.getAttachments();
-        if (attachments == null || attachments.isEmpty()) {
-            throw new HttpStatusException(ErrorCode.EMPTY_FILES);
-        }
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=files.zip")
-                .body(this.fileUseCase.getByteArrayResource(attachments));
+//        Task task = this.taskUseCase.getById(id);
+//        List<UploadFile> attachments = task.getAttachments();
+//        if (attachments == null || attachments.isEmpty()) {
+//            throw new HttpStatusException(ErrorCode.EMPTY_FILES);
+//        }
+//        return ResponseEntity.ok()
+//                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=files.zip")
+//                .body(this.fileUseCase.getByteArrayResource(attachments));
+        return ResponseEntity.ok("수정해야함");
     }
 
 }

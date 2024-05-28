@@ -3,7 +3,6 @@ package sparta.task.application.usecase;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
 import sparta.task.application.mapper.TaskMapper;
 import sparta.task.application.mapper.UploadFileMapper;
 import sparta.task.domain.model.Task;
@@ -37,16 +36,12 @@ public class TaskUseCase {
         ));
     }
 
-    public TaskResponseDto showTaskById(long taskId) {
+    public TaskResponseDto getById(long taskId) {
         Task task = taskRepository.getById(taskId);
         if (task.isDeleted()) {
             throw new HttpStatusException(ErrorCode.ALREADY_DELETED);
         }
         return taskMapper.toTaskDto(task);
-    }
-
-    public Task findById(long taskId) {
-        return taskRepository.getById(taskId);
     }
 
     public List<TaskResponseDto> showAll() {
@@ -60,16 +55,12 @@ public class TaskUseCase {
     public TaskResponseDto updateTaskBy(Long id, UpdateTaskRequestDto updateTaskRequestDto, User currentUser) { // 1. find Task task = taskRepository.getById(id);
         // task 자체에서 이걸 해야함
         Task task = taskRepository.getById(id);
-        // 2. 수정할 수 있는 사람인지?
         if (!task.canUpdateBy(currentUser)) {
             throw new HttpStatusException(ErrorCode.FORBIDDEN);
         }
-        User newAssignee = null;
-        if (updateTaskRequestDto.getAssignee() != null) {
-            newAssignee = userRepository.findByUsername(updateTaskRequestDto.getAssignee())
-                    .orElseThrow(() -> new HttpStatusException(ErrorCode.USER_NOT_FOUND));
-        }
-        // 3. update & save
+        User newAssignee = updateTaskRequestDto.getAssignee() != null
+                ? userRepository.getByUsername(updateTaskRequestDto.getAssignee())
+                : null;
         task.update(taskMapper.updateTaskDtoToEntity(updateTaskRequestDto, newAssignee));
         return taskMapper.toTaskDto(task);
     }
@@ -83,7 +74,10 @@ public class TaskUseCase {
 
     public void deleteBy(Long id, User currentUser) {
         Task task = taskRepository.getById(id);
-        task.delete();
+        if (!task.canUpdateBy(currentUser)) {
+            throw new HttpStatusException(ErrorCode.FORBIDDEN);
+        }
+
         task.delete();
         taskRepository.save(task);
     }
