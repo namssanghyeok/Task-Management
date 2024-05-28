@@ -16,11 +16,12 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import sparta.task.domain.model.UserRoleEnum;
 import sparta.task.infrastructure.jwt.JwtUtil;
 import sparta.task.infrastructure.security.exception.AccessDeniedHandlerImpl;
 import sparta.task.infrastructure.security.exception.AuthenticationEntryPointImpl;
-import sparta.task.infrastructure.security.filter.JwtAuthorizationFilter;
+import sparta.task.infrastructure.security.filter.JwtAuthenticationFilter;
 
 @Configuration
 @RequiredArgsConstructor
@@ -41,8 +42,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public JwtAuthorizationFilter jwtAuthorizationFilter() {
-        return new JwtAuthorizationFilter(jwtUtil);
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
+        return new JwtAuthenticationFilter(jwtUtil);
     }
 
     @Bean
@@ -86,7 +87,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
         );
 
-        http.addFilterBefore(jwtAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtAuthenticationFilter(), BasicAuthenticationFilter.class);
 
         return http.build();
     }

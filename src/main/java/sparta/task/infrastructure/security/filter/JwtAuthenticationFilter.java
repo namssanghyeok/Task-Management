@@ -1,95 +1,79 @@
 package sparta.task.infrastructure.security.filter;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import sparta.task.application.dto.TokenDto;
-import sparta.task.application.dto.request.LoginRequestDto;
-import sparta.task.application.usecase.RefreshTokenUseCase;
-import sparta.task.domain.model.User;
-import sparta.task.infrastructure.jwt.JwtUtil;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.util.StringUtils;
+import org.springframework.web.filter.OncePerRequestFilter;
 import sparta.task.infrastructure.security.principal.UserPrincipal;
-import sparta.task.presentational.web.exception.CustomErrorResponse;
+import sparta.task.infrastructure.jwt.JwtUtil;
+import sparta.task.domain.model.User;
+import sparta.task.domain.model.UserRoleEnum;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
-import java.util.UUID;
 
-/**
- * AuthController 의 /api/auth/login 핸들러로 직접 구현.
+/*
+ * context 에 user 등록
+ * 따라서 여기서 403 에러를 날릴 필요가 없음
+ * 그러면 403 에러가 어디서 날라가야하나..?
+ * 403 에러가 날라가긴 하는데... 난 내 커스텀 에러메시지를 날려주고 싶어.
+ * 이게 어떤건지 어떻게 만들어야하는지 어떤걸 참고해야하는지
  */
-@Slf4j(topic = "로그인 및 JWT 생성")
-public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+@Slf4j(topic = "JWT 검증 및 인가")
+@RequiredArgsConstructor
+public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
     private final JwtUtil jwtUtil;
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    private final RefreshTokenUseCase refreshTokenUseCase;
-
-    public JwtAuthenticationFilter(JwtUtil jwtUtil, RefreshTokenUseCase refreshTokenUseCase) {
-        this.jwtUtil = jwtUtil;
-        this.refreshTokenUseCase = refreshTokenUseCase;
-        setFilterProcessesUrl("/api/user/login");
-    }
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        try {
-            LoginRequestDto requestDto = new ObjectMapper().readValue(request.getInputStream(), LoginRequestDto.class);
+    protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain) throws ServletException, IOException {
 
-            return getAuthenticationManager().authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            requestDto.getUsername(),
-                            requestDto.getPassword(),
-                            null
-                    )
-            );
-        } catch (IOException e) {
-            log.error(e.getMessage());
-            throw new RuntimeException(e.getMessage());
+        String tokenValue = jwtUtil.getJwtFromHeader(req);
+        if (tokenValue == null) {
+            filterChain.doFilter(req, res);
+            return;
         }
+
+        if (StringUtils.hasText(tokenValue) && jwtUtil.validateToken(tokenValue, req)) {
+            Claims claims = jwtUtil.getUserInfoFromToken(tokenValue);
+            try {
+                setAuthentication(claims);
+            } catch (Exception e) {
+                log.error(e.getMessage());
+                return;
+            }
+        }
+
+        filterChain.doFilter(req, res);
     }
 
-    @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws ServletException, IOException {
-        User user = ((UserPrincipal) authResult.getPrincipal()).getUser();
+    // 인증 처리
+    public void setAuthentication(Claims claims) {
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        Authentication authentication = createAuthentication(claims);
+        context.setAuthentication(authentication);
 
-        String accessToken = jwtUtil.createAccessToken(user);
-        UUID refreshToken = refreshTokenUseCase.create(user);
-
-        TokenDto tokenDto = TokenDto.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .build();
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-        response.getWriter().write(objectMapper.writeValueAsString(tokenDto));
-        response.getWriter().flush();
+        SecurityContextHolder.setContext(context);
     }
 
-    @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-        response.getWriter().write(
-                CustomErrorResponse.builder()
-                        .timestamp(LocalDateTime.now())
-                        .path(request.getRequestURI())
-                        .status(HttpStatus.UNAUTHORIZED.value())
-                        .error(HttpStatus.UNAUTHORIZED.getReasonPhrase())
-                        .message("username 또는 password 가 잘못되었습니다.")
-                        .build().toString()
-        );
-
+    // 인증 객체 생성
+    private Authentication createAuthentication(Claims claims) {
+        UserDetails userDetails = new UserPrincipal(User.builder()
+                .username(claims.getSubject())
+                .id(claims.get(JwtUtil.CLAIM_ID, Long.class))
+                .nickname(claims.get(JwtUtil.CLAIM_NICKNAME, String.class))
+                .role(UserRoleEnum.valueOf(claims.get(JwtUtil.CLAIM_ROLE, String.class)))
+                .build());
+        return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 }
