@@ -1,4 +1,4 @@
-package sparta.task.application.service;
+package sparta.task.application.usecase;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +12,7 @@ import sparta.task.application.dto.response.UserResponseDto;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserUseCase {
     private final UserMapper userMapper;
     private final UserRepository userRepository;
 

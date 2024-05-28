@@ -1,4 +1,4 @@
-package sparta.task.application.service;
+package sparta.task.application.usecase;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class TaskService {
+public class TaskUseCase {
 
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;

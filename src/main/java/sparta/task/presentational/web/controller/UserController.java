@@ -8,16 +8,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import sparta.task.application.dto.request.SignupUserRequestDto;
-import sparta.task.application.service.UserService;
+import sparta.task.application.usecase.UserUseCase;
 
 @RestController
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
 public class UserController {
-    private final UserService userService;
+    private final UserUseCase userUseCase;
 
     @PostMapping
     ResponseEntity<?> signup(@Valid @RequestBody SignupUserRequestDto requestDto) {
-        return ResponseEntity.ok(this.userService.signup(requestDto));
+        return ResponseEntity.ok(this.userUseCase.signup(requestDto));
     }
 }

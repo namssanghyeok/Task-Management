@@ -14,8 +14,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import sparta.task.application.service.FileService;
-import sparta.task.application.service.TaskService;
+import sparta.task.application.usecase.FileUseCase;
+import sparta.task.application.usecase.TaskUseCase;
 import sparta.task.domain.model.Task;
 import sparta.task.domain.model.UploadFile;
 import sparta.task.domain.model.User;
@@ -36,8 +36,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/task")
 public class TaskController {
-    private final TaskService taskService;
-    private final FileService fileService;
+    private final TaskUseCase taskUseCase;
+    private final FileUseCase fileUseCase;
 
     @GetMapping("/test")
     ResponseEntity<?> temp(@LoginUser User currentUser) {
@@ -76,7 +76,7 @@ public class TaskController {
                                  @LoginUser User currentUser
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(taskService.createTask(createTaskRequestDto, currentUser));
+                .body(taskUseCase.createTask(createTaskRequestDto, currentUser));
     }
 
     @Operation(summary = "task를 조회합니다.")
@@ -87,14 +87,14 @@ public class TaskController {
     })
     @GetMapping("/{id}")
     ResponseEntity<?> showTaskById(@PathVariable Long id) {
-        return ResponseEntity.ok(this.taskService.showTaskById(id));
+        return ResponseEntity.ok(this.taskUseCase.showTaskById(id));
     }
 
     @Operation(summary = "모든 task를 조회합니다.")
     @ApiResponse(responseCode = "200", content = @Content(array = @ArraySchema(schema = @Schema(implementation = TaskResponseDto.class))), description = "삭제되지 않은 모든 task를 시간순(desc)으로 정렬합니다.")
     @GetMapping
     ResponseEntity<?> showAllTasks() {
-        return ResponseEntity.ok(this.taskService.showAll());
+        return ResponseEntity.ok(this.taskUseCase.showAll());
     }
 
     @Operation(summary = "task를 수정합니다.")
@@ -110,7 +110,7 @@ public class TaskController {
             @Valid @RequestBody UpdateTaskRequestDto updateTaskRequestDto,
             @LoginUser User currentUser
     ) {
-        return ResponseEntity.ok(this.taskService.updateTaskBy(id, updateTaskRequestDto, currentUser));
+        return ResponseEntity.ok(this.taskUseCase.updateTaskBy(id, updateTaskRequestDto, currentUser));
     }
 
     @Operation(summary = "task를 삭제합니다.")
@@ -124,7 +124,7 @@ public class TaskController {
     ResponseEntity<?> deleteTask(@PathVariable Long id, @LoginUser User currentUser) {
         // 예외를 비즈니스 -> 컨틀로러 catch -> 예외를 또 던지면
         //
-        this.taskService.deleteBy(id, currentUser);
+        this.taskUseCase.deleteBy(id, currentUser);
         //
         return ResponseEntity.noContent().build();
     }
@@ -143,7 +143,7 @@ public class TaskController {
     ) {
         // this.taskService.findByIdAndCheckCanUpdate(id, currentUser);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(this.fileService.fileUploadTo(id, uploadFileRequestDto.getFile()));
+                .body(this.fileUseCase.fileUploadTo(id, uploadFileRequestDto.getFile()));
     }
 
     @Operation(summary = "task에 업로드 된 파일을 조회합니다.")
@@ -153,7 +153,7 @@ public class TaskController {
     })
     @GetMapping("/{id}/attachment")
     public ResponseEntity<?> showFiles(@PathVariable Long id) {
-        return ResponseEntity.ok(this.taskService.findUploadFilesByTaskId(id));
+        return ResponseEntity.ok(this.taskUseCase.findUploadFilesByTaskId(id));
     }
 
     @Operation(summary = "task에 업로드 된 모든 파일 zip 형태로 다운로드.")
@@ -164,14 +164,14 @@ public class TaskController {
     })
     @GetMapping("/{id}/attachment/download")
     public ResponseEntity<?> downloadAllAttachments(@PathVariable Long id) {
-        Task task = this.taskService.findById(id);
+        Task task = this.taskUseCase.findById(id);
         List<UploadFile> attachments = task.getAttachments();
         if (attachments == null || attachments.isEmpty()) {
             throw new HttpStatusException(ErrorCode.EMPTY_FILES);
         }
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=files.zip")
-                .body(this.fileService.getByteArrayResource(attachments));
+                .body(this.fileUseCase.getByteArrayResource(attachments));
     }
 
 }

@@ -15,11 +15,11 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import sparta.task.application.dto.TokenDto;
 import sparta.task.application.dto.request.LoginRequestDto;
-import sparta.task.presentational.web.exception.CustomErrorResponse;
-import sparta.task.infrastructure.security.principal.UserPrincipal;
-import sparta.task.infrastructure.jwt.JwtUtil;
+import sparta.task.application.usecase.RefreshTokenUseCase;
 import sparta.task.domain.model.User;
-import sparta.task.application.service.RefreshTokenService;
+import sparta.task.infrastructure.jwt.JwtUtil;
+import sparta.task.infrastructure.security.principal.UserPrincipal;
+import sparta.task.presentational.web.exception.CustomErrorResponse;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -33,11 +33,11 @@ import java.util.UUID;
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
     private final JwtUtil jwtUtil;
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final RefreshTokenService refreshTokenService;
+    private final RefreshTokenUseCase refreshTokenUseCase;
 
-    public JwtAuthenticationFilter(JwtUtil jwtUtil, RefreshTokenService refreshTokenService) {
+    public JwtAuthenticationFilter(JwtUtil jwtUtil, RefreshTokenUseCase refreshTokenUseCase) {
         this.jwtUtil = jwtUtil;
-        this.refreshTokenService = refreshTokenService;
+        this.refreshTokenUseCase = refreshTokenUseCase;
         setFilterProcessesUrl("/api/user/login");
     }
 
@@ -64,7 +64,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         User user = ((UserPrincipal) authResult.getPrincipal()).getUser();
 
         String accessToken = jwtUtil.createAccessToken(user);
-        UUID refreshToken = refreshTokenService.create(user);
+        UUID refreshToken = refreshTokenUseCase.create(user);
 
         TokenDto tokenDto = TokenDto.builder()
                 .accessToken(accessToken)

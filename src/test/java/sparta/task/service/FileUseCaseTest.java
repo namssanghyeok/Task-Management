@@ -1,34 +1,14 @@
 package sparta.task.service;
 
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.multipart.MultipartFile;
-import sparta.task.application.service.FileService;
-import sparta.task.infrastructure.exception.HttpStatusException;
-import sparta.task.application.mapper.UploadFileMapper;
-import sparta.task.domain.model.UploadFile;
-import sparta.task.infrastructure.repository.jpa.UploadFileJpaRepository;
-import sparta.task.application.store.LocalFileStore;
-
-import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 @ExtendWith(MockitoExtension.class)
-class FileServiceTest {
+class FileUseCaseTest {
 //    @Mock
 //    private UploadFileJpaRepository uploadFileJpaRepository;
 //    @Mock

@@ -20,7 +20,7 @@ public class LoggingAspect {
     private void methodsFromControllerPackage() {
     }
 
-    @Pointcut("execution(* sparta.task.application.service..*.*(..))")
+    @Pointcut("execution(* sparta.task.application.usecase..*.*(..))")
     private void methodsFromServicePackage() {
     }
 

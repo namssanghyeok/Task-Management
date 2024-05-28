@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import sparta.task.application.service.TaskCommentService;
+import sparta.task.application.usecase.TaskCommentUseCase;
 import sparta.task.domain.model.User;
 import sparta.task.application.dto.request.CreateCommentRequestDto;
 import sparta.task.application.dto.request.UpdateCommentDto;
@@ -17,14 +17,14 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/task/{taskId}")
 public class TaskCommentController {
-    private final TaskCommentService taskCommentService;
+    private final TaskCommentUseCase taskCommentUseCase;
 
     @PostMapping("/comment")
     public ResponseEntity<?> newComment(@PathVariable Long taskId,
                                         @Valid @RequestBody CreateCommentRequestDto requestDto,
                                         @LoginUser User currentUser
     ) {
-        return ResponseEntity.ok(this.taskCommentService.addCommentToTask(taskId, requestDto, currentUser));
+        return ResponseEntity.ok(this.taskCommentUseCase.addCommentToTask(taskId, requestDto, currentUser));
     }
 
     @DeleteMapping("/comment/{commentId}")
@@ -32,7 +32,7 @@ public class TaskCommentController {
                                            @PathVariable UUID commentId,
                                            @LoginUser User currentUser
     ) {
-        this.taskCommentService.deleteCommentFromTask(taskId, commentId, currentUser);
+        this.taskCommentUseCase.deleteCommentFromTask(taskId, commentId, currentUser);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -42,7 +42,7 @@ public class TaskCommentController {
                                            @RequestBody UpdateCommentDto requestDto,
                                            @LoginUser User currentUser
     ) {
-        return ResponseEntity.ok(this.taskCommentService.updateCommentFromTask(taskId, commentId, requestDto, currentUser));
+        return ResponseEntity.ok(this.taskCommentUseCase.updateCommentFromTask(taskId, commentId, requestDto, currentUser));
     }
 
 }

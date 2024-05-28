@@ -15,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+import sparta.task.application.usecase.UserUseCase;
 import sparta.task.infrastructure.security.principal.UserPrincipal;
 import sparta.task.infrastructure.jwt.JwtUtil;
 import sparta.task.domain.model.User;
@@ -27,12 +28,14 @@ import java.io.IOException;
  * 따라서 여기서 403 에러를 날릴 필요가 없음
  * 그러면 403 에러가 어디서 날라가야하나..?
  * 403 에러가 날라가긴 하는데... 난 내 커스텀 에러메시지를 날려주고 싶어.
+ * 이게 어떤건지 어떻게 만들어야하는지 어떤걸 참고해야하는지
  */
 @Slf4j(topic = "JWT 검증 및 인가")
 @RequiredArgsConstructor
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private UserUseCase userUseCase;
 
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain) throws ServletException, IOException {

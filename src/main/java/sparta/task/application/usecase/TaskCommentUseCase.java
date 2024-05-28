@@ -1,14 +1,12 @@
-package sparta.task.application.service;
+package sparta.task.application.usecase;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import sparta.task.domain.repository.TaskRepository;
-import sparta.task.infrastructure.exception.constants.ErrorCode;
 import sparta.task.application.dto.request.CreateCommentRequestDto;
 import sparta.task.application.dto.request.UpdateCommentDto;
 import sparta.task.application.dto.response.CommentResponseDto;
-import sparta.task.infrastructure.exception.HttpStatusException;
 import sparta.task.application.mapper.CommentMapper;
 import sparta.task.domain.model.Comment;
 import sparta.task.domain.model.Task;
@@ -18,7 +16,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class TaskCommentService {
+public class TaskCommentUseCase {
     private final TaskRepository taskRepository;
     private final CommentMapper commentMapper;
 

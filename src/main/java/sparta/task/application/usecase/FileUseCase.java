@@ -1,4 +1,4 @@
-package sparta.task.application.service;
+package sparta.task.application.usecase;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
@@ -27,7 +27,7 @@ import java.util.zip.ZipOutputStream;
 
 @Service
 @RequiredArgsConstructor
-public class FileService {
+public class FileUseCase {
     private final TaskRepository taskRepository;
     private final UploadFileRepository uploadFileRepository;
 

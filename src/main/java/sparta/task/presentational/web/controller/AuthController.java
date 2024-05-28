@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import sparta.task.application.dto.TokenDto;
 import sparta.task.application.dto.request.LoginRequestDto;
 import sparta.task.application.dto.request.ReIssueAccessTokenRequestDto;
-import sparta.task.application.service.RefreshTokenService;
+import sparta.task.application.usecase.RefreshTokenUseCase;
 import sparta.task.domain.model.User;
 import sparta.task.infrastructure.jwt.JwtUtil;
 import sparta.task.infrastructure.security.principal.UserPrincipal;
@@ -25,13 +25,14 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class AuthController {
     private final JwtUtil jwtUtil;
-    private final RefreshTokenService refreshTokenService;
+    private final RefreshTokenUseCase refreshTokenUseCase;
     private final AuthenticationManager authenticationManager;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDto loginRequestDto) {
         /*
-         * 로그인 실패 시 AuthenticationEntryPoint 실행됨 */
+         * 로그인 실패 시 AuthenticationEntryPoint 실행됨
+         */
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequestDto.getUsername(),
@@ -39,19 +40,21 @@ public class AuthController {
                         null
                 )
         );
+
         User user = ((UserPrincipal) authentication.getPrincipal()).getUser();
         String accessToken = jwtUtil.createAccessToken(user);
-        UUID refreshToken = refreshTokenService.create(user);
+        UUID refreshToken = refreshTokenUseCase.create(user);
         return ResponseEntity.ok(TokenDto.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
-                .build());
+                .build()
+        );
     }
 
     @PostMapping("/reissue")
     public ResponseEntity<?> reissueAccessToken(@Valid @RequestBody ReIssueAccessTokenRequestDto requestDto) {
         return ResponseEntity.ok(
-                this.refreshTokenService.reissueAccessToken(requestDto)
+                this.refreshTokenUseCase.reissueAccessToken(requestDto)
         );
     }
 }
