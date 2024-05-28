@@ -9,20 +9,23 @@ Content-Type: application/json
   "password": "helloworld"
 }
 
-### login
-POST localhost:8080/api/user/login
+### signup 2
+
+POST localhost:8080/api/user
 Content-Type: application/json
 
 {
-  "username": "helloworld",
-  "password": "helloworld"
+  "username": "foobar",
+  "nickname": "foobar",
+  "password": "password"
 }
+### signup admin
 
-### login failed
-POST localhost:8080/api/user/login
+POST localhost:8080/api/user
 Content-Type: application/json
 
 {
-  "username": "helloworld",
-  "password": "helloworl"
+  "username": "admin",
+  "nickname": "admin",
+  "password": "password"
 }

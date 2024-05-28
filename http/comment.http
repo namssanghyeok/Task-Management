@@ -1,0 +1,25 @@
+### new comment
+POST localhost:8080/api/task/1/comment
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "content": "hello world!"
+}
+
+> {%
+    client.global.set("comment_id", response.body.commentId)
+%}
+
+### delete comment
+DELETE localhost:8080/api/task/1/comment/{{comment_id}}
+Authorization: Bearer {{access_token}}
+
+### update comment
+PUT localhost:8080/api/task/1/comment/{{comment_id}}
+Authorization: Bearer {{access_token}}
+Content-Type: application/json
+
+{
+  "content": "asdfasdf"
+}

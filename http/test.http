@@ -1,0 +1,13 @@
+###
+GET localhost:8080/api/task/test
+Authorization: Bearer sdfasdf
+Authorization: Bearer {{access_token}}
+
+### user
+GET localhost:8080/api/task/user
+Authorization: Bearer {{access_token}}
+
+
+### admin
+GET localhost:8080/api/task/admin
+Authorization: Bearer {{access_token}}

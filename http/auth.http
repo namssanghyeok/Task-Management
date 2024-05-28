@@ -1,5 +1,5 @@
-### login
-POST localhost:8080/api/user/login
+### login with helloworld
+POST localhost:8080/api/auth/login
 Content-Type: application/json
 
 {
@@ -7,7 +7,48 @@ Content-Type: application/json
   "password": "helloworld"
 }
 
-> {% client.global.set("access_token", response.body.accessToken); %}
+> {%
+    client.global.set("access_token", response.body.accessToken);
+    client.global.set("refresh_token", response.body.refreshToken);
+%}
+
+### login with admin
+POST localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "password"
+}
+
+> {%
+    client.global.set("access_token", response.body.accessToken);
+    client.global.set("refresh_token", response.body.refreshToken);
+%}
+
+### login with foobar
+POST localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "foobar",
+  "password": "password"
+}
+
+> {%
+    client.global.set("access_token", response.body.accessToken);
+    client.global.set("refresh_token", response.body.refreshToken);
+%}
+
+### login failed
+POST localhost:8080/api/user/login
+Content-Type: application/json
+
+{
+  "username": "helloworl",
+  "password": "helloworld"
+}
+
 
 ### create task using login info
 POST http://localhost:8080/api/task
@@ -20,3 +61,17 @@ Authorization: Bearer {{access_token}}
   "assignee": "foo@gmail.com",
   "password": "1234"
 }
+
+
+### reissue token
+POST http://localhost:8080/api/auth/reissue
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refresh_token}}"
+}
+
+> {%
+    client.global.set("access_token", response.body.accessToken);
+    client.global.set("refresh_token", response.body.refreshToken);
+%}

@@ -1,13 +1,23 @@
 ### SUC CREATE TASK
 POST http://localhost:8080/api/task
 Content-Type: application/json
+Authorization: Bearer {{access_token}}
 
 {
   "title": "hello world",
   "content": "hahahoho",
-  "assignee": "foo@gmail.com",
-  "password": "1234"
+  "assignee": "helloworld"
 }
+
+### SUC CREATE TASK
+POST http://localhost:8080/api/task
+Content-Type: application/json
+Authorization: Bearer {{access_token}}
+
+{
+  "content": "hahahoho"
+}
+
 
 ### SUC CREATE TASK WITHOUT ASSIGNEE
 POST http://localhost:8080/api/task
@@ -32,19 +42,23 @@ Content-Type: application/json
 ### FIND BY ID
 GET localhost:8080/api/task/6
 
+### test
+GET localhost:8080/api/task/test
+
 ### SHOW ALL
 GET localhost:8080/api/task
+Authorization: Bearer {{access_token}}
 
 ### UPDATE
-PUT localhost:8080/api/task/6
+PUT localhost:8080/api/task/28
 Content-Type: application/json
+Authorization: Bearer {{access_token}}
 
 {
-  "title": "title is updated",
-  "content": "content is updated",
-  "password": "1234"
+  "title": "title is updated22",
+  "content": "content is updated"
 }
 
 ### DELETE
-DELETE localhost:8080/api/task/6?password=1234
-
+DELETE localhost:8080/api/task/28
+Authorization: Bearer {{access_token}}
