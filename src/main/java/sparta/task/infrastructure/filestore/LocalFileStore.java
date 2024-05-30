@@ -1,11 +1,12 @@
-package sparta.task.application.store;
+package sparta.task.infrastructure.filestore;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-import sparta.task.infrastructure.exception.constants.ErrorCode;
-import sparta.task.infrastructure.exception.HttpStatusException;
 import sparta.task.domain.model.UploadFile;
+import sparta.task.domain.store.FileStore;
+import sparta.task.infrastructure.exception.HttpStatusException;
+import sparta.task.infrastructure.exception.constants.ErrorCode;
 
 import java.io.File;
 import java.io.IOException;
