@@ -50,7 +50,7 @@ GET localhost:8080/api/task
 Authorization: Bearer {{access_token}}
 
 ### UPDATE
-PUT localhost:8080/api/task/28
+PUT localhost:8080/api/task/1
 Content-Type: application/json
 Authorization: Bearer {{access_token}}
 
@@ -60,5 +60,5 @@ Authorization: Bearer {{access_token}}
 }
 
 ### DELETE
-DELETE localhost:8080/api/task/28
+DELETE localhost:8080/api/task/1
 Authorization: Bearer {{access_token}}

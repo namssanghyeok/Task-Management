@@ -1,4 +1,4 @@
-package sparta.task.presentational.web.validation.annotation;
+package sparta.task.presentation.web.validation.annotation;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

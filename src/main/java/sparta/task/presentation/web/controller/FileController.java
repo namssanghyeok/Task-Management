@@ -1,4 +1,4 @@
-package sparta.task.presentational.web.controller;
+package sparta.task.presentation.web.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sparta.task.domain.model.UploadFile;
 import sparta.task.domain.model.User;
-import sparta.task.presentational.web.argumentResolver.annotation.LoginUser;
+import sparta.task.presentation.web.argumentResolver.annotation.LoginUser;
 import sparta.task.application.usecase.FileUseCase;
 
 @Tag(name = "파일 다운로드 / 삭제 / 일반 요청")

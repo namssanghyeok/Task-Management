@@ -7,7 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import sparta.task.infrastructure.exception.constants.ErrorMessage;
-import sparta.task.presentational.web.exception.CustomErrorResponse;
+import sparta.task.presentation.web.exception.CustomErrorResponse;
 import sparta.task.infrastructure.jwt.JwtUtil;
 
 import java.io.IOException;

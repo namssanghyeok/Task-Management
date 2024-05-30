@@ -1,4 +1,4 @@
-package sparta.task.presentational.web.controller;
+package sparta.task.presentation.web.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -10,25 +10,18 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sparta.task.application.usecase.FileUseCase;
 import sparta.task.application.usecase.TaskUseCase;
-import sparta.task.domain.model.Task;
-import sparta.task.domain.model.UploadFile;
 import sparta.task.domain.model.User;
-import sparta.task.infrastructure.exception.HttpStatusException;
-import sparta.task.infrastructure.exception.constants.ErrorCode;
 import sparta.task.application.dto.request.CreateTaskRequestDto;
 import sparta.task.application.dto.request.UpdateTaskRequestDto;
 import sparta.task.application.dto.request.UploadFileRequestDto;
 import sparta.task.application.dto.response.TaskResponseDto;
-import sparta.task.presentational.web.exception.CustomErrorResponse;
-import sparta.task.presentational.web.argumentResolver.annotation.LoginUser;
-
-import java.util.List;
+import sparta.task.presentation.web.exception.CustomErrorResponse;
+import sparta.task.presentation.web.argumentResolver.annotation.LoginUser;
 
 @Slf4j
 @Tag(name = "Task Controller", description = "Task 컨트롤러입니다.")

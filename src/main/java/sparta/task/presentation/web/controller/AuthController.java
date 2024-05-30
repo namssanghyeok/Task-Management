@@ -1,4 +1,4 @@
-package sparta.task.presentational.web.controller;
+package sparta.task.presentation.web.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +19,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDto loginRequestDto) {
+//        throw new BadRequestException();
         /*
          * 로그인 실패 시 AuthenticationEntryPoint 실행됨
          */

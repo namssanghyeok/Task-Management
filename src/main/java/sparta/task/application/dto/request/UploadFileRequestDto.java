@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.multipart.MultipartFile;
-import sparta.task.presentational.web.validation.annotation.File;
+import sparta.task.presentation.web.validation.annotation.File;
 
 @Getter
 @Setter

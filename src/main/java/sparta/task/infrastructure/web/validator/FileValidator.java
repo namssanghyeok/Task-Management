@@ -4,7 +4,7 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
-import sparta.task.presentational.web.validation.annotation.File;
+import sparta.task.presentation.web.validation.annotation.File;
 
 import java.util.List;
 

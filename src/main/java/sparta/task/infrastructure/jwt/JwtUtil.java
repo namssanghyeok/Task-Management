@@ -26,9 +26,6 @@ public class JwtUtil {
     // Token 식별자
     public static final String BEARER_PREFIX = "Bearer ";
 
-    //
-    public static final String JWT_ERROR_KEY = "expired";
-
 
     // 토큰 만료시간
     // private final long ACCESS_EXPIRATION_TOKEN_TIME = 10 * 1000L; // 10초

@@ -1,4 +1,4 @@
-package sparta.task.presentational.web.controller;
+package sparta.task.presentation.web.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Component
 @Aspect
 public class LoggingAspect {
-    @Pointcut("execution(* sparta.task.presentational.web.controller..*.*(..))")
+    @Pointcut("execution(* sparta.task.presentation.web.controller..*.*(..))")
     private void methodsFromControllerPackage() {
     }
 

@@ -1,4 +1,4 @@
-package sparta.task.presentational.web.exception.handler;
+package sparta.task.presentation.web.exception.handler;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -8,7 +8,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import sparta.task.infrastructure.exception.HttpStatusException;
-import sparta.task.presentational.web.exception.CustomErrorResponse;
+import sparta.task.presentation.web.exception.CustomErrorResponse;
 
 import java.time.LocalDateTime;
 

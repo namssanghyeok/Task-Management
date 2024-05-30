@@ -14,7 +14,7 @@ import sparta.task.infrastructure.security.principal.UserPrincipal;
 public class LoginUser implements HandlerMethodArgumentResolver {
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(sparta.task.presentational.web.argumentResolver.annotation.LoginUser.class) &&
+        return parameter.hasParameterAnnotation(sparta.task.presentation.web.argumentResolver.annotation.LoginUser.class) &&
                 parameter.getParameterType().equals(User.class);
     }
 

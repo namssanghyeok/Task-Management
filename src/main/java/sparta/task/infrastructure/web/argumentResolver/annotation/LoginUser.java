@@ -1,4 +1,4 @@
-package sparta.task.presentational.web.argumentResolver.annotation;
+package sparta.task.presentation.web.argumentResolver.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

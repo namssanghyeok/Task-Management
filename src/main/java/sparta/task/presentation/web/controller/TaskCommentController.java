@@ -1,4 +1,4 @@
-package sparta.task.presentational.web.controller;
+package sparta.task.presentation.web.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +9,7 @@ import sparta.task.application.usecase.TaskCommentUseCase;
 import sparta.task.domain.model.User;
 import sparta.task.application.dto.request.CreateCommentRequestDto;
 import sparta.task.application.dto.request.UpdateCommentDto;
-import sparta.task.presentational.web.argumentResolver.annotation.LoginUser;
+import sparta.task.presentation.web.argumentResolver.annotation.LoginUser;
 
 import java.util.UUID;
 

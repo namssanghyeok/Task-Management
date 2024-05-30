@@ -7,7 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import sparta.task.infrastructure.exception.constants.ErrorMessage;
-import sparta.task.presentational.web.exception.CustomErrorResponse;
+import sparta.task.presentation.web.exception.CustomErrorResponse;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
