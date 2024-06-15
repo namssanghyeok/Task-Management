@@ -9,10 +9,10 @@ import sparta.task.domain.model.User;
 
 @Component
 public class TaskMapper {
-    public Task CreateTaskDtoToEntity(CreateTaskRequestDto createTaskRequestDto,
-                                      User currentUser,
-                                      User assignee
-                                      ) {
+    public Task toEntity(CreateTaskRequestDto createTaskRequestDto,
+                         User currentUser,
+                         User assignee
+    ) {
         return Task.builder()
                 .title(createTaskRequestDto.getTitle())
                 .content(createTaskRequestDto.getContent())
@@ -21,8 +21,8 @@ public class TaskMapper {
                 .build();
     }
 
-    public Task updateTaskDtoToEntity(UpdateTaskRequestDto updateTaskRequestDto,
-                                      User assignee) {
+    public Task toEntity(UpdateTaskRequestDto updateTaskRequestDto,
+                         User assignee) {
         return Task.builder()
                 .title(updateTaskRequestDto.getTitle())
                 .content(updateTaskRequestDto.getContent())
@@ -30,7 +30,7 @@ public class TaskMapper {
                 .build();
     }
 
-    public TaskResponseDto toTaskDto(Task task) {
+    public TaskResponseDto toDto(Task task) {
         return TaskResponseDto.builder()
                 .id(task.getId())
                 .title(task.getTitle())

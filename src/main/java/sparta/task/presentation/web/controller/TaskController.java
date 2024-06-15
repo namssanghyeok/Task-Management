@@ -103,7 +103,7 @@ public class TaskController {
             @Valid @RequestBody UpdateTaskRequestDto updateTaskRequestDto,
             @LoginUser User currentUser
     ) {
-        return ResponseEntity.ok(this.taskUseCase.updateTaskBy(id, updateTaskRequestDto, currentUser));
+        return ResponseEntity.ok(this.taskUseCase.updateTask(id, updateTaskRequestDto, currentUser));
     }
 
     @Operation(summary = "task를 삭제합니다.")

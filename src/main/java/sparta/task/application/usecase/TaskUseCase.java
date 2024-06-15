@@ -31,8 +31,8 @@ public class TaskUseCase {
 
     public TaskResponseDto createTask(CreateTaskRequestDto createTaskRequestDto, User currentuser) {
         User assignee = userRepository.getByUsername(createTaskRequestDto.getAssignee());
-        return taskMapper.toTaskDto(taskRepository.save(
-                taskMapper.CreateTaskDtoToEntity(createTaskRequestDto, currentuser, assignee)
+        return taskMapper.toDto(taskRepository.save(
+                taskMapper.toEntity(createTaskRequestDto, currentuser, assignee)
         ));
     }
 
@@ -41,18 +41,18 @@ public class TaskUseCase {
         if (task.isDeleted()) {
             throw new HttpStatusException(ErrorCode.ALREADY_DELETED);
         }
-        return taskMapper.toTaskDto(task);
+        return taskMapper.toDto(task);
     }
 
     public List<TaskResponseDto> showAll() {
         return taskRepository.findAllByDeletedAtIsNull(Sort.by(Sort.Direction.DESC, "createdAt"))
                 .stream()
-                .map(taskMapper::toTaskDto)
+                .map(taskMapper::toDto)
                 .toList();
     }
 
     @Transactional
-    public TaskResponseDto updateTaskBy(Long id, UpdateTaskRequestDto updateTaskRequestDto, User currentUser) { // 1. find Task task = taskRepository.getById(id);
+    public TaskResponseDto updateTask(Long id, UpdateTaskRequestDto updateTaskRequestDto, User currentUser) { // 1. find Task task = taskRepository.getById(id);
         // task 자체에서 이걸 해야함
         Task task = taskRepository.getById(id);
         if (!task.canUpdateBy(currentUser)) {
@@ -61,8 +61,8 @@ public class TaskUseCase {
         User newAssignee = updateTaskRequestDto.getAssignee() != null
                 ? userRepository.getByUsername(updateTaskRequestDto.getAssignee())
                 : null;
-        task.update(taskMapper.updateTaskDtoToEntity(updateTaskRequestDto, newAssignee));
-        return taskMapper.toTaskDto(task);
+        task.update(taskMapper.toEntity(updateTaskRequestDto, newAssignee));
+        return taskMapper.toDto(task);
     }
 
     public List<UploadFileResponseDto> findUploadFilesByTaskId(long id) {

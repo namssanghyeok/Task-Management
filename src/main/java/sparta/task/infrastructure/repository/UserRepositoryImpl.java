@@ -8,17 +8,10 @@ import sparta.task.infrastructure.exception.HttpStatusException;
 import sparta.task.infrastructure.exception.constants.ErrorCode;
 import sparta.task.infrastructure.repository.jpa.UserJpaRepository;
 
-import java.util.Optional;
-
 @RequiredArgsConstructor
 @Repository
 public class UserRepositoryImpl implements UserRepository {
     private final UserJpaRepository userJpaRepository;
-
-    @Override
-    public Optional<User> findByUsername(String username) {
-        return userJpaRepository.findByUsername(username);
-    }
 
     @Override
     public User getByUsername(String username) {
