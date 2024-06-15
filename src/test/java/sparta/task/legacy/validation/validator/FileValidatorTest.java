@@ -1,4 +1,4 @@
-package sparta.task.validation.validator;
+package sparta.task.legacy.validation.validator;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;

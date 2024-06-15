@@ -1,4 +1,4 @@
-package sparta.task.service;
+package sparta.task.legacy.service;
 
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;

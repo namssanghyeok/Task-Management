@@ -1,4 +1,4 @@
-package sparta.task.store;
+package sparta.task.legacy.store;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
