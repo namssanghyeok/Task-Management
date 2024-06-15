@@ -36,7 +36,7 @@ public class Comment extends TimeStamp {
 
     @Transient
     public boolean canUpdateBy(User currentUser) {
-        return author.isAdmin() || author.getId().equals(currentUser.getId());
+        return currentUser.isAdmin() || author.getId().equals(currentUser.getId());
     }
 
     @Transient
