@@ -72,6 +72,7 @@ public class TaskUseCase {
                 .toList();
     }
 
+    @Transactional
     public void deleteBy(Long id, User currentUser) {
         Task task = taskRepository.getById(id);
         if (!task.canUpdateBy(currentUser)) {
@@ -79,6 +80,5 @@ public class TaskUseCase {
         }
 
         task.delete();
-        taskRepository.save(task);
     }
 }
